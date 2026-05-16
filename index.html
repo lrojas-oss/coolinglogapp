@@ -192,12 +192,34 @@ tbody td{padding:8px 11px;font-family:'DM Mono',monospace;white-space:nowrap;}
 .rep-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--b2);}
 .rep-bar-wrap{flex:1;background:var(--s3);border-radius:4px;height:8px;overflow:hidden;}
 .rep-bar{height:100%;border-radius:4px;background:var(--cyan);transition:width .4s;}
+/* AUTH */
+#sAuth{background:var(--bg);align-items:center;justify-content:center;padding:32px 24px;}
+.auth-box{width:100%;max-width:360px;background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;margin-top:8px;}
+.auth-err{font-size:.8rem;color:var(--red);background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.28);border-radius:8px;padding:9px 12px;display:none;}
+.auth-err.show{display:block;}
+.auth-user{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--t2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+input.t-err{border-color:var(--red)!important;}
+.t-msg{font-size:.62rem;color:var(--red);margin-top:2px;display:none;}
+.t-msg.show{display:block;}
 </style>
 </head>
 <body>
 
+<!-- AUTH SCREEN -->
+<div id="sAuth" class="screen active">
+  <div class="r-logo">❄️</div>
+  <div class="r-title">VACUUM LOG</div>
+  <div class="r-sub">INICIA SESIÓN PARA CONTINUAR</div>
+  <div class="auth-box">
+    <div class="auth-err" id="authErr"></div>
+    <div class="f"><label>Correo electrónico</label><input type="email" id="authEmail" placeholder="usuario@empresa.com" autocomplete="email"></div>
+    <div class="f"><label>Contraseña</label><input type="password" id="authPass" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn btn-cy" id="btnSignIn">Iniciar sesión</button>
+  </div>
+</div>
+
 <!-- ROLE SCREEN -->
-<div id="sRole" class="screen active">
+<div id="sRole" class="screen">
   <div class="r-logo">❄️</div>
   <div class="r-title">VACUUM LOG</div>
   <div class="r-sub">REGISTRO DE ENFRIAMIENTO DE HORTALIZAS</div>
@@ -214,7 +236,9 @@ tbody td{padding:8px 11px;font-family:'DM Mono',monospace;white-space:nowrap;}
     <div class="hdr-info"><h1>VACUUM LOG</h1><span>APP DE OPERADOR</span></div>
     <div class="sync-wrap"><div class="sync-dot" id="opDot"></div><span class="sync-lbl" id="opLbl"></span></div>
     <span class="hdr-badge badge-op">OPERADOR</span>
+    <span class="auth-user" id="opUserEmail"></span>
     <button class="btn-role" id="opRoleBtn">⇄ Rol</button>
+    <button class="btn-role" id="opSignOutBtn" style="color:var(--red);">↪ Salir</button>
   </header>
   <div class="tab-bar" id="tabBar">
     <div class="tab active" id="tabList">📋 Mis Ciclos</div>
@@ -235,7 +259,9 @@ tbody td{padding:8px 11px;font-family:'DM Mono',monospace;white-space:nowrap;}
     <div class="hdr-info"><h1>VACUUM LOG</h1><span>DASHBOARD SUPERVISOR</span></div>
     <div class="sync-wrap"><div class="sync-dot" id="supDot"></div><span class="sync-lbl" id="supLbl"></span></div>
     <span class="hdr-badge badge-sup">SUPERVISOR</span>
+    <span class="auth-user" id="supUserEmail"></span>
     <button class="btn-role" id="supRoleBtn">⇄ Rol</button>
+    <button class="btn-role" id="supSignOutBtn" style="color:var(--red);">↪ Salir</button>
   </header>
   <div class="sup-wrap">
     <div class="sup-topbar">
@@ -336,9 +362,16 @@ var DL={
   rancho:['Meza','Quintero 1','M&M','Mendoza','Canzeco','Castillo 19','Castillo 61','Duran','El Rayado','Flores Restaurante','García','Gaspar','Guevara','Guitarra','Lopez Norte','Machado','Magdalena Aguirre','Miranda','Orencio','Paz','Soto','Uribe','Arroyo','Ortiz','Meniz','Ruiz','Arreola','Soluna','Amerifresh 1','Gonzalez','Las Muchachas','Lacarra','Rancho Nuevo','RG','Gallo','Armando','Salomon','Lezo','Castro','Quintero 2 Meza','Ponce','Toluca','Taylor Farms','Robles']
 };
 /* ─── STATE ─────────────────────────────────── */
-var APP={records:{},lists:JSON.parse(JSON.stringify(DL)),openTabs:[],curTab:'list',curRole:null,addField:null,fMode:'all',sortF:'createdAt',sortD:'desc'};
+var APP={records:{},lists:JSON.parse(JSON.stringify(DL)),openTabs:[],curTab:'list',curRole:null,currentUser:null,connected:false,addField:null,fMode:'all',sortF:'createdAt',sortD:'desc'};
 /* ─── FIREBASE PLACEHOLDER ──────────────────── */
 window.fbWrite=function(){return Promise.resolve();};
+window.doSignIn=function(){toast('Conectando con Firebase...','ok');};
+window.doSignOut=function(){toast('Cerrando sesión...','ok');};
+/* ─── TEMP VALIDATION ────────────────────────── */
+var TEMP_MIN=30,TEMP_MAX=85;
+function validateTemp(val){if(val===''||val===null||val===undefined)return null;var n=parseFloat(val);if(isNaN(n))return'Valor inválido';if(n<TEMP_MIN)return'Mínimo '+TEMP_MIN+'°F';if(n>TEMP_MAX)return'Máximo '+TEMP_MAX+'°F';return null;}
+function setTempErr(inputId,msg){var inp=ge(inputId);if(!inp)return;var wrap=inp.closest('.f');if(!wrap)return;var ex=wrap.querySelector('.t-msg');if(!ex){ex=document.createElement('span');ex.className='t-msg';wrap.appendChild(ex);}if(msg){inp.classList.add('t-err');ex.textContent=msg;ex.classList.add('show');}else{inp.classList.remove('t-err');ex.textContent='';ex.classList.remove('show');}}
+function validateTemps(){var teErr=validateTemp(gv('fte')),tsErr=validateTemp(gv('fts'));setTempErr('fte',teErr);setTempErr('fts',tsErr);return !teErr&&!tsErr;}
 /* ─── UTILS ─────────────────────────────────── */
 function today(){return new Date().toISOString().slice(0,10);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
@@ -348,9 +381,15 @@ function toast(msg,type){var e=ge('toast');e.textContent=msg;e.className='show '
 function syncDot(s,role){var p=role||'op';var d=ge(p+'Dot');var l=ge(p+'Lbl');if(!d)return;d.className='sync-dot'+(s==='on'?' on':s==='sy'?' sy':'');l.textContent=s==='on'?'En línea':s==='sy'?'Sync...':'Sin conexión';}
 function chipCls(t){return{RMC7:'c1',RMC8:'c2',MC3:'c3',MC2:'c4','Pressure cooler':'c5'}[t]||'cx';}
 /* ─── SCREENS ───────────────────────────────── */
-function showScreen(id){['sRole','sOp','sSup'].forEach(function(s){var e=ge(s);e.style.display='none';e.classList.remove('active');});var t=ge(id);t.style.display='flex';setTimeout(function(){t.classList.add('active');},10);}
-function selectRole(r){APP.curRole=r;showScreen(r==='operator'?'sOp':'sSup');r==='operator'?renderOp():renderSup();syncDot('',r==='supervisor'?'sup':'op');}
+function showScreen(id){['sAuth','sRole','sOp','sSup'].forEach(function(s){var e=ge(s);e.style.display='none';e.classList.remove('active');});var t=ge(id);t.style.display='flex';setTimeout(function(){t.classList.add('active');},10);}
+function selectRole(r){APP.curRole=r;showScreen(r==='operator'?'sOp':'sSup');r==='operator'?renderOp():renderSup();syncDot(APP.connected?'on':'',r==='supervisor'?'sup':'op');}
 function goRole(){APP.curRole=null;showScreen('sRole');}
+/* ─── AUTH EVENTS ───────────────────────────── */
+ge('btnSignIn').addEventListener('click',function(){window.doSignIn();});
+ge('authEmail').addEventListener('keydown',function(e){if(e.key==='Enter')ge('authPass').focus();});
+ge('authPass').addEventListener('keydown',function(e){if(e.key==='Enter')window.doSignIn();});
+ge('opSignOutBtn').addEventListener('click',function(){window.doSignOut();});
+ge('supSignOutBtn').addEventListener('click',function(){window.doSignOut();});
 /* ─── ROLE SCREEN EVENTS ────────────────────── */
 ge('btnRoleOp').addEventListener('click',function(){selectRole('operator');});
 ge('btnRoleSup').addEventListener('click',function(){selectRole('supervisor');});
@@ -394,11 +433,12 @@ function renderList(){var a=ge('opScroll');var recs=Object.entries(APP.records).
 function rcHTML(id,r){var o=r.status!=='closed';var c=parseFloat(r.cut_to_cool);var a=!isNaN(c)&&c>4;return'<div class="rec-card'+(a?' kpi-on':'')+'" data-id="'+id+'"><div class="rc-top"><span class="rc-id">'+id+'</span><span class="badge '+(o?'b-open':'b-closed')+'">'+(o?'⏳ ABIERTO':'✔ CERRADO')+'</span></div><div class="rc-title">'+(r.producto||'—')+' · '+(r.tubo||'—')+'</div><div class="rc-meta"><span>📅 '+(r.fecha||'—')+'</span><span>🌾 '+(r.rancho||'—')+'</span><span>👤 '+(r.operador||'—')+'</span></div><div class="rc-pills">'+(r.cut_to_cool?'<span class="pill '+(a?'al':'ok')+'">Cut‑Cool: '+r.cut_to_cool+' h '+(a?'⚠️':'✓')+'</span>':'')+(r.tiempo_ciclo?'<span class="pill">Ciclo: '+r.tiempo_ciclo+' min</span>':'')+'</div></div>';}
 function mkSel(id,field,sel,dis){var d=dis?'disabled':'';return'<select id="'+id+'" '+d+'><option value="">Seleccionar...</option>'+APP.lists[field].map(function(v){return'<option'+(v===sel?' selected':'')+'>'+esc(v)+'</option>';}).join('')+'</select>';}
 function prodBlock(i,rec,dis){var s=i===0?'':String(i+1);var d=dis;var n=i===0?'':' #'+(i+1);var rb=(i>0&&!d)?'<button class="btn btn-re btn-sm" style="min-height:26px;padding:3px 10px;" data-rem="'+i+'">✕ Quitar</button>':'';return(i>0?'<div class="prod-sep">Producto'+n+' '+rb+'</div>':'')+'<div class="f"><label>Producto'+n+(i===0?' <span class="req">*</span>':'')+'</label><div class="sel-row">'+mkSel('fp'+s,'producto',rec['producto'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="producto">＋</div>')+'</div></div><div class="f"><label>Contenedor'+n+'</label><div class="sel-row">'+mkSel('fc'+s,'contenedor',rec['contenedor'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="contenedor">＋</div>')+'</div></div><div class="f"><label>Cliente'+n+'</label><div class="sel-row">'+mkSel('fcl'+s,'cliente',rec['cliente'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="cliente">＋</div>')+'</div></div><div class="f"><label>Rancho'+n+'</label><div class="sel-row">'+mkSel('fr'+s,'rancho',rec['rancho'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="rancho">＋</div>')+'</div></div><div class="f"><label>Cantidad'+n+'</label><input id="fca'+s+'" value="'+esc(rec['cantidad'+s]||'')+'" placeholder="Ej. 500 cajas" '+(d?'disabled':'')+'></div><div class="f"><label>Lote'+n+'</label><input id="fl'+s+'" value="'+esc(rec['lote'+s]||'')+'" placeholder="Número de lote" '+(d?'disabled':'')+'></div><div class="f"><label>Tag #'+n+'</label><input id="ft'+s+'" value="'+esc(rec['tag'+s]||'')+'" placeholder="Número de tag" '+(d?'disabled':'')+'></div>';}
-function renderForm(id){var rec=APP.records[id]||{};var cl=rec.status==='closed';var ns=cl?1:(rec.producto2?rec.producto3?3:2:1);var pb='';for(var i=0;i<ns;i++)pb+=prodBlock(i,rec,cl);var apb=(!cl&&ns<3)?'<button class="btn btn-gh btn-sm wide" id="btnAP" style="min-height:36px;grid-column:1/-1;">＋ Agregar producto</button>':'';var cv=rec.cut_to_cool||'';var kw=!isNaN(parseFloat(cv))&&parseFloat(cv)>4;ge('opScroll').innerHTML='<div class="fw"><div class="card"><div class="card-hd">🆔 Identificación</div><div class="card-bd"><div class="f"><label>Fecha <span class="req">*</span></label><input type="date" id="fd" value="'+esc(rec.fecha||today())+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Tubo # <span class="req">*</span></label><div class="sel-row">'+mkSel('ftu','tubo',rec.tubo||'',cl?'disabled':'')+(cl?'':'<div class="btn-add-opt" data-ao="tubo">＋</div>')+'</div></div><div class="f wide"><label>Operador <span class="req">*</span></label><input id="fop" value="'+esc(rec.operador||'')+'" placeholder="Nombre del operador" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">🥬 Producto</div><div class="card-bd" id="psw">'+pb+apb+'</div></div><div class="card"><div class="card-hd">🌡️ Tiempos y Temperaturas</div><div class="card-bd"><div class="f"><label>Hora de Cosecha</label><input type="time" id="fhc" value="'+esc(rec.hora_cosecha||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora Entrada a Tubo</label><input type="time" id="fhe" value="'+esc(rec.hora_entrada||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Entrada (°F)</label><input type="number" id="fte" value="'+esc(rec.temp_entrada||'')+'" placeholder="°F" step="0.1" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora de Salida</label><input type="time" id="fhs" value="'+esc(rec.hora_salida||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Salida (°F)</label><input type="number" id="fts" value="'+esc(rec.temp_salida||'')+'" placeholder="°F" step="0.1" '+(cl?'disabled':'')+'></div><div class="f"><label>Oxígeno (%)</label><input type="number" id="fox" value="'+esc(rec.oxigeno||'')+'" placeholder="%" step="0.1" min="0" max="100" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">📊 KPIs</div><div class="card-bd c1"><div class="f"><label>Cut to Cool (horas)</label><input class="calc'+(kw?' warn':'')+'" id="fctc" value="'+esc(cv?cv+' h':'')+'" readonly placeholder="— automático —"></div><div class="f"><label>Tiempo de Ciclo (minutos)</label><input class="calc" id="fcyc" value="'+esc(rec.tiempo_ciclo?rec.tiempo_ciclo+' min':'')+'" readonly placeholder="— automático —"></div>'+(kw?'<div class="kpi-alert-box">⚠️ KPI EXCEDIDO — Cut to Cool supera 4 horas</div>':'')+'</div></div><div style="height:8px"></div></div>';
+function renderForm(id){var rec=APP.records[id]||{};var cl=rec.status==='closed';var ns=cl?1:(rec.producto2?rec.producto3?3:2:1);var pb='';for(var i=0;i<ns;i++)pb+=prodBlock(i,rec,cl);var apb=(!cl&&ns<3)?'<button class="btn btn-gh btn-sm wide" id="btnAP" style="min-height:36px;grid-column:1/-1;">＋ Agregar producto</button>':'';var cv=rec.cut_to_cool||'';var kw=!isNaN(parseFloat(cv))&&parseFloat(cv)>4;ge('opScroll').innerHTML='<div class="fw"><div class="card"><div class="card-hd">🆔 Identificación</div><div class="card-bd"><div class="f"><label>Fecha <span class="req">*</span></label><input type="date" id="fd" value="'+esc(rec.fecha||today())+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Tubo # <span class="req">*</span></label><div class="sel-row">'+mkSel('ftu','tubo',rec.tubo||'',cl?'disabled':'')+(cl?'':'<div class="btn-add-opt" data-ao="tubo">＋</div>')+'</div></div><div class="f wide"><label>Operador <span class="req">*</span></label><input id="fop" value="'+esc(rec.operador||'')+'" placeholder="Nombre del operador" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">🥬 Producto</div><div class="card-bd" id="psw">'+pb+apb+'</div></div><div class="card"><div class="card-hd">🌡️ Tiempos y Temperaturas</div><div class="card-bd"><div class="f"><label>Hora de Cosecha</label><input type="time" id="fhc" value="'+esc(rec.hora_cosecha||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora Entrada a Tubo</label><input type="time" id="fhe" value="'+esc(rec.hora_entrada||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Entrada (°F)</label><input type="number" id="fte" value="'+esc(rec.temp_entrada||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora de Salida</label><input type="time" id="fhs" value="'+esc(rec.hora_salida||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Salida (°F)</label><input type="number" id="fts" value="'+esc(rec.temp_salida||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Oxígeno (%)</label><input type="number" id="fox" value="'+esc(rec.oxigeno||'')+'" placeholder="%" step="0.1" min="0" max="100" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">📊 KPIs</div><div class="card-bd c1"><div class="f"><label>Cut to Cool (horas)</label><input class="calc'+(kw?' warn':'')+'" id="fctc" value="'+esc(cv?cv+' h':'')+'" readonly placeholder="— automático —"></div><div class="f"><label>Tiempo de Ciclo (minutos)</label><input class="calc" id="fcyc" value="'+esc(rec.tiempo_ciclo?rec.tiempo_ciclo+' min':'')+'" readonly placeholder="— automático —"></div>'+(kw?'<div class="kpi-alert-box">⚠️ KPI EXCEDIDO — Cut to Cool supera 4 horas</div>':'')+'</div></div><div style="height:8px"></div></div>';
   ge('opFoot').style.display=cl?'none':'flex';
   ge('btnCloseC').style.display=cl?'none':'';
   // Wire time inputs
   ['fhc','fhe','fhs'].forEach(function(fid){var e=ge(fid);if(e)e.addEventListener('input',calcF);});
+  ['fte','fts'].forEach(function(fid){var e=ge(fid);if(e)e.addEventListener('input',function(){setTempErr(fid,validateTemp(e.value));});});
   // Wire product slots area (delegation)
   var psw=ge('psw');
   if(psw){
@@ -418,9 +458,9 @@ function collectSlots(){var r=[];for(var i=0;i<3;i++){var s=i===0?'':String(i+1)
 function rebuildSlots(data){var psw=ge('psw');if(!psw)return;var apb=ge('btnAP');Array.from(psw.children).forEach(function(c){if(c!==apb)c.remove();});var fr={};data.forEach(function(d,i){var s=i===0?'':String(i+1);fr['producto'+s]=d.producto;fr['contenedor'+s]=d.contenedor;fr['cliente'+s]=d.cliente;fr['rancho'+s]=d.rancho;fr['cantidad'+s]=d.cantidad;fr['lote'+s]=d.lote;fr['tag'+s]=d.tag;});var tmp=document.createElement('div');data.forEach(function(d,i){tmp.innerHTML+=prodBlock(i,fr,false);});while(tmp.firstChild)psw.insertBefore(tmp.firstChild,apb);if(apb)apb.style.display=data.length<3?'':'none';psw.querySelectorAll('[data-rem]').forEach(function(b){b.addEventListener('click',function(){remSlot(parseInt(b.dataset.rem));});});psw.querySelectorAll('.btn-add-opt').forEach(function(b){b.addEventListener('click',function(){openAddOpt(b.dataset.ao);});});}
 function calcF(){var c=gv('fhc'),e=gv('fhe'),s=gv('fhs');var ce=ge('fctc'),cy=ge('fcyc');if(c&&e&&ce){var d=(+e.split(':')[0]*60+ +e.split(':')[1])-(+c.split(':')[0]*60+ +c.split(':')[1]);if(d<0)d+=1440;var h=(d/60).toFixed(2);ce.value=h+' h';ce.className='calc'+(parseFloat(h)>4?' warn':'');}if(e&&s&&cy){var dm=(+s.split(':')[0]*60+ +s.split(':')[1])-(+e.split(':')[0]*60+ +e.split(':')[1]);if(dm<0)dm+=1440;cy.value=dm+' min';}}
 function getFD(){var data={fecha:gv('fd'),tubo:gv('ftu'),operador:gv('fop'),hora_cosecha:gv('fhc'),hora_entrada:gv('fhe'),temp_entrada:gv('fte'),hora_salida:gv('fhs'),temp_salida:gv('fts'),oxigeno:gv('fox'),cut_to_cool:gv('fctc').replace(' h','').trim(),tiempo_ciclo:gv('fcyc').replace(' min','').trim()};for(var i=0;i<3;i++){var s=i===0?'':String(i+1);var el=ge('fp'+s);if(el){data['producto'+s]=gv('fp'+s);data['contenedor'+s]=gv('fc'+s);data['cliente'+s]=gv('fcl'+s);data['rancho'+s]=gv('fr'+s);data['cantidad'+s]=gv('fca'+s);data['lote'+s]=gv('fl'+s);data['tag'+s]=gv('ft'+s);}else{data['producto'+s]=data['contenedor'+s]=data['cliente'+s]=data['rancho'+s]=data['cantidad'+s]=data['lote'+s]=data['tag'+s]='';}}return data;}
-function saveRec(silent){var id=APP.curTab;if(id==='list')return;var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:(APP.records[id]||{}).status||'open',createdAt:(APP.records[id]||{}).createdAt||Date.now(),updatedAt:Date.now()});APP.records[id]=pl;window.fbWrite('cycles/'+id,pl).then(function(){syncDot('on','op');}).catch(function(){syncDot('','op');});if(!silent)toast('✓ Guardado','ok');renderTabs();}
+function saveRec(silent){var id=APP.curTab;if(id==='list')return;if(!silent&&!validateTemps()){toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:(APP.records[id]||{}).status||'open',createdAt:(APP.records[id]||{}).createdAt||Date.now(),updatedAt:Date.now()});APP.records[id]=pl;window.fbWrite('cycles/'+id,pl).then(function(){syncDot('on','op');}).catch(function(){syncDot('','op');});if(!silent)toast('✓ Guardado','ok');renderTabs();}
 function newCycle(){var id='CYC-'+Date.now().toString(36).toUpperCase();var r={id:id,fecha:today(),status:'open',createdAt:Date.now()};APP.records[id]=r;window.fbWrite('cycles/'+id,r).catch(function(){});APP.openTabs.push(id);APP.curTab=id;renderOp();}
-function doClose(){var id=APP.curTab;if(id==='list')return;var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:'closed',closedAt:Date.now(),updatedAt:Date.now()});APP.records[id]=pl;window.fbWrite('cycles/'+id,pl).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast('✔ Ciclo cerrado','ok');}
+function doClose(){var id=APP.curTab;if(id==='list')return;if(!validateTemps()){ge('modalClose').classList.remove('open');toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:'closed',closedAt:Date.now(),updatedAt:Date.now()});APP.records[id]=pl;window.fbWrite('cycles/'+id,pl).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast('✔ Ciclo cerrado','ok');}
 function openAddOpt(f){APP.addField=f;var labs={tubo:'Tubo #',producto:'Producto',contenedor:'Contenedor',cliente:'Cliente',rancho:'Rancho'};ge('mAddLbl').textContent='Nuevo valor para "'+(labs[f]||f)+'":';ge('mAddInput').value='';ge('modalAddOpt').classList.add('open');setTimeout(function(){ge('mAddInput').focus();},300);}
 function doAddOpt(){var v=ge('mAddInput').value.trim();var f=APP.addField;if(!v||!f){ge('modalAddOpt').classList.remove('open');return;}if(APP.lists[f].includes(v)){toast('Ya existe','err');return;}APP.lists[f].push(v);var ex=APP.lists[f].filter(function(x){return!DL[f].includes(x);});window.fbWrite('lists/'+f,ex).catch(function(){});ge('modalAddOpt').classList.remove('open');toast('✓ "'+v+'" agregado','ok');if(APP.curTab!=='list')renderForm(APP.curTab);}
 
@@ -439,13 +479,12 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 </script>
 
 <script type="module">
-// ╔══════════════════════════════════════════════════╗
-// ║  🔥 PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE      ║
-// ╚══════════════════════════════════════════════════╝
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
 const firebaseConfig = {
- apiKey: "AIzaSyDkvn8-fT7wchfk4KCC1Fx4japPJ7Fq-vE",
+  apiKey: "AIzaSyDkvn8-fT7wchfk4KCC1Fx4japPJ7Fq-vE",
   authDomain: "coolinglog-95752.firebaseapp.com",
   databaseURL: "https://coolinglog-95752-default-rtdb.firebaseio.com",
   projectId: "coolinglog-95752",
@@ -454,11 +493,75 @@ const firebaseConfig = {
   appId: "1:259730970399:web:4226e06ef2df81f083022a",
   measurementId: "G-JD3C3RTD8X"
 };
-// ══════════════════════════════════════════════════
-let db=null;
-try{ db=getDatabase(initializeApp(firebaseConfig)); }catch(e){ console.warn('Firebase keys pending.',e.message); }
+
+let db=null, auth=null;
+try{
+  const app=initializeApp(firebaseConfig);
+  db=getDatabase(app);
+  auth=getAuth(app);
+}catch(e){ console.warn('Firebase init error.',e.message); }
+
+const ALLOWED_DOMAINS=['harvesttekmex.com','sfcos.com'];
+
+/* ── AUTH ── */
+if(auth){
+  onAuthStateChanged(auth,function(user){
+    if(user){
+      var domain=(user.email||'').split('@')[1]||'';
+      if(!ALLOWED_DOMAINS.includes(domain)){
+        signOut(auth);
+        var errEl=ge('authErr');
+        errEl.textContent='Acceso restringido. Solo usuarios @harvesttekmex.com o @sfcos.com.';
+        errEl.classList.add('show');
+        var btn=ge('btnSignIn');btn.disabled=false;btn.textContent='Iniciar sesión';
+        return;
+      }
+      APP.currentUser=user;
+      var e1=ge('opUserEmail'),e2=ge('supUserEmail');
+      if(e1)e1.textContent=user.email;
+      if(e2)e2.textContent=user.email;
+      if(!APP.curRole)showScreen('sRole');
+    }else{
+      APP.currentUser=null;
+      APP.curRole=null;
+      APP.openTabs=[];
+      APP.curTab='list';
+      showScreen('sAuth');
+    }
+  });
+
+  window.doSignIn=function(){
+    var email=gv('authEmail').trim(),pass=gv('authPass');
+    var errEl=ge('authErr');
+    if(!email||!pass){errEl.textContent='Ingresa correo y contraseña.';errEl.classList.add('show');return;}
+    errEl.classList.remove('show');
+    var btn=ge('btnSignIn');btn.disabled=true;btn.textContent='Ingresando...';
+    signInWithEmailAndPassword(auth,email,pass).catch(function(err){
+      var msgs={
+        'auth/invalid-credential':'Correo o contraseña incorrectos.',
+        'auth/user-not-found':'Usuario no encontrado.',
+        'auth/wrong-password':'Contraseña incorrecta.',
+        'auth/invalid-email':'Correo electrónico inválido.',
+        'auth/too-many-requests':'Demasiados intentos. Espera un momento.',
+        'auth/network-request-failed':'Sin conexión a Internet.'
+      };
+      errEl.textContent=msgs[err.code]||'Error al iniciar sesión ('+err.code+').';
+      errEl.classList.add('show');
+      btn.disabled=false;btn.textContent='Iniciar sesión';
+    });
+  };
+
+  window.doSignOut=function(){ signOut(auth); };
+}
+
+/* ── DATABASE ── */
 if(db){
   window.fbWrite=function(path,data){ return set(ref(db,path),data); };
+  onValue(ref(db,'.info/connected'),function(snap){
+    APP.connected=!!snap.val();
+    var role=APP.curRole==='supervisor'?'sup':'op';
+    syncDot(APP.connected?'on':'',role);
+  });
   onValue(ref(db,'cycles'),function(snap){
     APP.records=snap.val()||{};
     syncDot('on',APP.curRole==='supervisor'?'sup':'op');
