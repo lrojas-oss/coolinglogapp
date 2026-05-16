@@ -8,9 +8,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VacuumLog">
-<link rel="manifest" href="file:///C:/Users/lrojas/Downloads/manifest.json">
-<link rel="apple-touch-icon" href="file:///C:/Users/lrojas/Downloads/icon-192.png">
-<link rel="icon" href="file:///C:/Users/lrojas/Downloads/icon-192.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" href="./icon-192.png">
 <title>VacuumLog ❄️</title>
 <link href="./index_files/css2" rel="stylesheet">
 <style>
@@ -201,6 +201,16 @@ tbody td{padding:8px 11px;font-family:'DM Mono',monospace;white-space:nowrap;}
 input.t-err{border-color:var(--red)!important;}
 .t-msg{font-size:.62rem;color:var(--red);margin-top:2px;display:none;}
 .t-msg.show{display:block;}
+/* GOOGLE SIGN-IN */
+.btn-google{background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:9px;font-family:'Barlow',sans-serif;font-weight:600;font-size:.88rem;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 18px;width:100%;cursor:pointer;transition:background .15s;-webkit-user-select:none;user-select:none;}
+.btn-google:active{background:#f1f3f4;}
+.btn-google:disabled{opacity:.6;cursor:default;}
+.auth-hint{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--t3);text-align:center;line-height:1.7;}
+/* INSTALL */
+.install-wrap{margin-top:28px;}
+.btn-install{display:none;align-items:center;gap:7px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:24px;padding:9px 20px;font-family:'Barlow',sans-serif;font-size:.76rem;font-weight:700;color:var(--cyan);cursor:pointer;letter-spacing:.02em;-webkit-user-select:none;user-select:none;transition:background .15s;}
+.btn-install:active{background:rgba(56,189,248,.12);}
+.btn-install.visible{display:flex;}
 </style>
 </head>
 <body>
@@ -212,9 +222,11 @@ input.t-err{border-color:var(--red)!important;}
   <div class="r-sub">INICIA SESIÓN PARA CONTINUAR</div>
   <div class="auth-box">
     <div class="auth-err" id="authErr"></div>
-    <div class="f"><label>Correo electrónico</label><input type="email" id="authEmail" placeholder="usuario@empresa.com" autocomplete="email"></div>
-    <div class="f"><label>Contraseña</label><input type="password" id="authPass" placeholder="••••••••" autocomplete="current-password"></div>
-    <button class="btn btn-cy" id="btnSignIn">Iniciar sesión</button>
+    <button class="btn-google" id="btnSignIn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <span id="btnSignInLbl">Continuar con Google</span>
+    </button>
+    <p class="auth-hint">Acceso restringido a cuentas<br>@harvesttekmex.com · @sfcos.com</p>
   </div>
 </div>
 
@@ -226,6 +238,9 @@ input.t-err{border-color:var(--red)!important;}
   <div class="r-cards">
     <div class="r-card op" id="btnRoleOp"><div class="r-icon">📱</div><div class="r-name">OPERADOR</div><div class="r-desc">Registrar ciclos de enfriamiento en campo</div></div>
     <div class="r-card sup" id="btnRoleSup"><div class="r-icon">🖥️</div><div class="r-name">SUPERVISOR</div><div class="r-desc">Dashboard de monitoreo en tiempo real</div></div>
+  </div>
+  <div class="install-wrap">
+    <button class="btn-install" id="btnInstall">⬇ Instalar app en este dispositivo</button>
   </div>
 </div>
 
@@ -386,10 +401,13 @@ function selectRole(r){APP.curRole=r;showScreen(r==='operator'?'sOp':'sSup');r==
 function goRole(){APP.curRole=null;showScreen('sRole');}
 /* ─── AUTH EVENTS ───────────────────────────── */
 ge('btnSignIn').addEventListener('click',function(){window.doSignIn();});
-ge('authEmail').addEventListener('keydown',function(e){if(e.key==='Enter')ge('authPass').focus();});
-ge('authPass').addEventListener('keydown',function(e){if(e.key==='Enter')window.doSignIn();});
 ge('opSignOutBtn').addEventListener('click',function(){window.doSignOut();});
 ge('supSignOutBtn').addEventListener('click',function(){window.doSignOut();});
+/* ─── PWA INSTALL ────────────────────────────── */
+var _installPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_installPrompt=e;ge('btnInstall').classList.add('visible');});
+ge('btnInstall').addEventListener('click',function(){if(!_installPrompt)return;_installPrompt.prompt();_installPrompt.userChoice.then(function(){_installPrompt=null;ge('btnInstall').classList.remove('visible');});});
+window.addEventListener('appinstalled',function(){_installPrompt=null;ge('btnInstall').classList.remove('visible');});
 /* ─── ROLE SCREEN EVENTS ────────────────────── */
 ge('btnRoleOp').addEventListener('click',function(){selectRole('operator');});
 ge('btnRoleSup').addEventListener('click',function(){selectRole('supervisor');});
@@ -481,7 +499,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkvn8-fT7wchfk4KCC1Fx4japPJ7Fq-vE",
@@ -505,15 +523,21 @@ const ALLOWED_DOMAINS=['harvesttekmex.com','sfcos.com'];
 
 /* ── AUTH ── */
 if(auth){
+  getRedirectResult(auth).catch(function(err){
+    if(err&&err.code&&err.code!=='auth/no-auth-event'){
+      ge('authErr').textContent='Error al iniciar sesión ('+err.code+').';
+      ge('authErr').classList.add('show');
+    }
+  });
+
   onAuthStateChanged(auth,function(user){
     if(user){
       var domain=(user.email||'').split('@')[1]||'';
       if(!ALLOWED_DOMAINS.includes(domain)){
-        signOut(auth);
         var errEl=ge('authErr');
-        errEl.textContent='Acceso restringido. Solo usuarios @harvesttekmex.com o @sfcos.com.';
+        errEl.textContent='Acceso restringido. Solo cuentas @harvesttekmex.com o @sfcos.com.';
         errEl.classList.add('show');
-        var btn=ge('btnSignIn');btn.disabled=false;btn.textContent='Iniciar sesión';
+        signOut(auth);
         return;
       }
       APP.currentUser=user;
@@ -526,28 +550,24 @@ if(auth){
       APP.curRole=null;
       APP.openTabs=[];
       APP.curTab='list';
+      var btn=ge('btnSignIn'),lbl=ge('btnSignInLbl');
+      if(btn)btn.disabled=false;
+      if(lbl)lbl.textContent='Continuar con Google';
       showScreen('sAuth');
     }
   });
 
   window.doSignIn=function(){
-    var email=gv('authEmail').trim(),pass=gv('authPass');
-    var errEl=ge('authErr');
-    if(!email||!pass){errEl.textContent='Ingresa correo y contraseña.';errEl.classList.add('show');return;}
-    errEl.classList.remove('show');
-    var btn=ge('btnSignIn');btn.disabled=true;btn.textContent='Ingresando...';
-    signInWithEmailAndPassword(auth,email,pass).catch(function(err){
-      var msgs={
-        'auth/invalid-credential':'Correo o contraseña incorrectos.',
-        'auth/user-not-found':'Usuario no encontrado.',
-        'auth/wrong-password':'Contraseña incorrecta.',
-        'auth/invalid-email':'Correo electrónico inválido.',
-        'auth/too-many-requests':'Demasiados intentos. Espera un momento.',
-        'auth/network-request-failed':'Sin conexión a Internet.'
-      };
-      errEl.textContent=msgs[err.code]||'Error al iniciar sesión ('+err.code+').';
+    var btn=ge('btnSignIn'),lbl=ge('btnSignInLbl'),errEl=ge('authErr');
+    btn.disabled=true;lbl.textContent='Abriendo Google...';errEl.classList.remove('show');
+    signInWithPopup(auth,new GoogleAuthProvider()).catch(function(err){
+      if(err.code==='auth/popup-blocked'){signInWithRedirect(auth,new GoogleAuthProvider());return;}
+      if(err.code==='auth/popup-closed-by-user'||err.code==='auth/cancelled-popup-request'){
+        btn.disabled=false;lbl.textContent='Continuar con Google';return;
+      }
+      errEl.textContent=err.code==='auth/network-request-failed'?'Sin conexión a Internet.':'Error al iniciar sesión ('+err.code+').';
       errEl.classList.add('show');
-      btn.disabled=false;btn.textContent='Iniciar sesión';
+      btn.disabled=false;lbl.textContent='Continuar con Google';
     });
   };
 
