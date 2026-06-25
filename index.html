@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- saved from url=(0047)file:///C:/Users/lrojas/Downloads/index_12.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--t1);font-family:'Barlow',sans-serif;overfl
 .screen{display:none;width:100%;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
 /* ROLE */
-#sRole{background:var(--bg);align-items:center;justify-content:center;padding:32px 24px;}
+#sRole{background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cline x1='20' y1='0' x2='20' y2='40' stroke='rgba(56%2C189%2C248%2C0.05)' stroke-width='0.5'/%3E%3Cline x1='0' y1='20' x2='40' y2='20' stroke='rgba(56%2C189%2C248%2C0.05)' stroke-width='0.5'/%3E%3C/svg%3E");align-items:center;justify-content:center;padding:32px 24px;}
 .r-logo{width:76px;height:76px;border-radius:20px;background:linear-gradient(135deg,var(--cyan),var(--green));display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:22px;box-shadow:0 0 48px rgba(56,189,248,.2);}
 .r-title{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;letter-spacing:.06em;margin-bottom:4px;text-align:center;}
 .r-sub{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:44px;text-align:center;}
@@ -93,7 +93,7 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .badge{font-size:.61rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.05em;}
 .b-open{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.3);}
 .b-closed{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25);}
-.rc-title{font-size:.95rem;font-weight:700;margin-bottom:4px;}
+.rc-title{font-size:1rem;font-weight:700;margin-bottom:4px;}
 .rc-meta{font-size:.72rem;color:var(--t2);display:flex;gap:8px;flex-wrap:wrap;}
 .rc-pills{font-family:'DM Mono',monospace;font-size:.69rem;margin-top:7px;display:flex;gap:6px;flex-wrap:wrap;}
 .pill{padding:2px 9px;border-radius:20px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);}
@@ -141,6 +141,12 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .kpi-s{font-size:.67rem;color:var(--t3);margin-top:3px;}
 .kpi-card.ci .kpi-v{color:var(--cyan);}.kpi-card.cg .kpi-v{color:var(--green);}.kpi-card.cr .kpi-v{color:var(--red);}
 .kpi-card.cr{border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.04);}
+@keyframes kpi-pulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,0);}50%{box-shadow:0 0 22px 4px rgba(248,113,113,.28);}}
+.kpi-card.cr.pulse{animation:kpi-pulse 3s ease-in-out infinite;}
+.ctc-track-top{width:100%;height:10px;background:linear-gradient(to right,#34d399 0%,#fbbf24 68%,#f87171 100%);position:relative;flex-shrink:0;}
+.ctc-cover{position:absolute;top:0;right:0;bottom:0;background:var(--s1);transition:width .6s;}
+.card-cold{border-left:3px solid var(--cyan)!important;background:rgba(56,189,248,.025)!important;}
+#sOp .card-cold .card-hd{color:var(--cyan);}
 .tubes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px;margin-bottom:22px;}
 .tube-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;overflow:hidden;cursor:pointer;}
 .tube-card.over{border-color:rgba(248,113,113,.4);}
@@ -211,6 +217,22 @@ input.t-err{border-color:var(--red)!important;}
 .btn-install{display:none;align-items:center;gap:7px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:24px;padding:9px 20px;font-family:'Barlow',sans-serif;font-size:.76rem;font-weight:700;color:var(--cyan);cursor:pointer;letter-spacing:.02em;-webkit-user-select:none;user-select:none;transition:background .15s;}
 .btn-install:active{background:rgba(56,189,248,.12);}
 .btn-install.visible{display:flex;}
+/* SUPERVISOR LIGHT THEME */
+#sSup{--bg:#f2f5f9;--s1:#ffffff;--s2:#f1f5f9;--s3:#e2e8f0;--b1:#cbd5e1;--b2:#94a3b8;--t1:#0f172a;--t2:#334155;--t3:#64748b;background:#f2f5f9;color:#0f172a;}
+#sSup .hdr{background:rgba(255,255,255,.97);border-bottom:1px solid #cbd5e1;}
+#sSup .hdr-info h1{color:#0f172a;}
+#sSup .hdr-info span{color:#64748b;}
+#sSup .sync-lbl{color:#64748b;}
+#sSup .btn-role{background:#f1f5f9;border-color:#cbd5e1;color:#334155;}
+#sSup .auth-user{color:#334155;}
+#sSup tbody tr{border-bottom:1px solid #e2e8f0;}
+#sSup tbody tr:hover{background:#edf2f8;}
+#sSup .krow{border-left:3px solid var(--red);}
+/* Historial Completo – encabezados más grandes y sólidos */
+#sSup thead th{background:#dde4ef;color:#0f172a;font-size:.82rem;font-weight:800;letter-spacing:.05em;padding:11px 13px;border-bottom:2px solid #b8c7de;}
+#sSup thead th:hover{color:#334155;}
+/* Supervisor: KPI numbers más grandes y crisper */
+#sSup .kpi-v{font-size:2.5rem;letter-spacing:-.03em;}
 </style>
 </head>
 <body>
@@ -281,7 +303,7 @@ input.t-err{border-color:var(--red)!important;}
   <div class="sup-wrap">
     <div class="sup-topbar">
       <div class="live-pill"><div class="live-dot"></div>EN VIVO</div>
-      <button class="btn btn-gh btn-sm" id="btnExport">⬇ Exportar CSV</button>
+      <button class="btn btn-gh btn-sm" id="btnExport">⬇ Descargar Excel</button>
     </div>
     <div class="kpi-strip">
       <div class="kpi-card ci"><div class="kpi-l">Ciclos activos</div><div class="kpi-v" id="kAct">—</div><div class="kpi-s">En proceso</div></div>
@@ -429,7 +451,7 @@ ge('modalAddOpt').addEventListener('click',function(e){if(e.target===ge('modalAd
 ge('mAddInput').addEventListener('keydown',function(e){if(e.key==='Enter')doAddOpt();});
 /* ─── SUPERVISOR EVENTS ─────────────────────── */
 ge('supRoleBtn').addEventListener('click',goRole);
-ge('btnExport').addEventListener('click',exportCSV);
+ge('btnExport').addEventListener('click',exportXLSX);
 ge('srchInput').addEventListener('input',renderTable);
 ge('fAll').addEventListener('click',function(){setFilter('all');});
 ge('fOpen').addEventListener('click',function(){setFilter('open');});
@@ -451,7 +473,7 @@ function renderList(){var a=ge('opScroll');var recs=Object.entries(APP.records).
 function rcHTML(id,r){var o=r.status!=='closed';var c=parseFloat(r.cut_to_cool);var a=!isNaN(c)&&c>4;return'<div class="rec-card'+(a?' kpi-on':'')+'" data-id="'+id+'"><div class="rc-top"><span class="rc-id">'+id+'</span><span class="badge '+(o?'b-open':'b-closed')+'">'+(o?'⏳ ABIERTO':'✔ CERRADO')+'</span></div><div class="rc-title">'+(r.producto||'—')+' · '+(r.tubo||'—')+'</div><div class="rc-meta"><span>📅 '+(r.fecha||'—')+'</span><span>🌾 '+(r.rancho||'—')+'</span><span>👤 '+(r.operador||'—')+'</span></div><div class="rc-pills">'+(r.cut_to_cool?'<span class="pill '+(a?'al':'ok')+'">Cut‑Cool: '+r.cut_to_cool+' h '+(a?'⚠️':'✓')+'</span>':'')+(r.tiempo_ciclo?'<span class="pill">Ciclo: '+r.tiempo_ciclo+' min</span>':'')+'</div></div>';}
 function mkSel(id,field,sel,dis){var d=dis?'disabled':'';return'<select id="'+id+'" '+d+'><option value="">Seleccionar...</option>'+APP.lists[field].map(function(v){return'<option'+(v===sel?' selected':'')+'>'+esc(v)+'</option>';}).join('')+'</select>';}
 function prodBlock(i,rec,dis){var s=i===0?'':String(i+1);var d=dis;var n=i===0?'':' #'+(i+1);var rb=(i>0&&!d)?'<button class="btn btn-re btn-sm" style="min-height:26px;padding:3px 10px;" data-rem="'+i+'">✕ Quitar</button>':'';return(i>0?'<div class="prod-sep">Producto'+n+' '+rb+'</div>':'')+'<div class="f"><label>Producto'+n+(i===0?' <span class="req">*</span>':'')+'</label><div class="sel-row">'+mkSel('fp'+s,'producto',rec['producto'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="producto">＋</div>')+'</div></div><div class="f"><label>Contenedor'+n+'</label><div class="sel-row">'+mkSel('fc'+s,'contenedor',rec['contenedor'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="contenedor">＋</div>')+'</div></div><div class="f"><label>Cliente'+n+'</label><div class="sel-row">'+mkSel('fcl'+s,'cliente',rec['cliente'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="cliente">＋</div>')+'</div></div><div class="f"><label>Rancho'+n+'</label><div class="sel-row">'+mkSel('fr'+s,'rancho',rec['rancho'+s]||'',d)+(d?'':'<div class="btn-add-opt" data-ao="rancho">＋</div>')+'</div></div><div class="f"><label>Cantidad'+n+'</label><input id="fca'+s+'" value="'+esc(rec['cantidad'+s]||'')+'" placeholder="Ej. 500 cajas" '+(d?'disabled':'')+'></div><div class="f"><label>Lote'+n+'</label><input id="fl'+s+'" value="'+esc(rec['lote'+s]||'')+'" placeholder="Número de lote" '+(d?'disabled':'')+'></div><div class="f"><label>Tag #'+n+'</label><input id="ft'+s+'" value="'+esc(rec['tag'+s]||'')+'" placeholder="Número de tag" '+(d?'disabled':'')+'></div>';}
-function renderForm(id){var rec=APP.records[id]||{};var cl=rec.status==='closed';var ns=cl?1:(rec.producto2?rec.producto3?3:2:1);var pb='';for(var i=0;i<ns;i++)pb+=prodBlock(i,rec,cl);var apb=(!cl&&ns<3)?'<button class="btn btn-gh btn-sm wide" id="btnAP" style="min-height:36px;grid-column:1/-1;">＋ Agregar producto</button>':'';var cv=rec.cut_to_cool||'';var kw=!isNaN(parseFloat(cv))&&parseFloat(cv)>4;ge('opScroll').innerHTML='<div class="fw"><div class="card"><div class="card-hd">🆔 Identificación</div><div class="card-bd"><div class="f"><label>Fecha <span class="req">*</span></label><input type="date" id="fd" value="'+esc(rec.fecha||today())+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Tubo # <span class="req">*</span></label><div class="sel-row">'+mkSel('ftu','tubo',rec.tubo||'',cl?'disabled':'')+(cl?'':'<div class="btn-add-opt" data-ao="tubo">＋</div>')+'</div></div><div class="f wide"><label>Operador <span class="req">*</span></label><input id="fop" value="'+esc(rec.operador||'')+'" placeholder="Nombre del operador" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">🥬 Producto</div><div class="card-bd" id="psw">'+pb+apb+'</div></div><div class="card"><div class="card-hd">🌡️ Tiempos y Temperaturas</div><div class="card-bd"><div class="f"><label>Hora de Cosecha</label><input type="time" id="fhc" value="'+esc(rec.hora_cosecha||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora Entrada a Tubo</label><input type="time" id="fhe" value="'+esc(rec.hora_entrada||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Entrada (°F)</label><input type="number" id="fte" value="'+esc(rec.temp_entrada||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora de Salida</label><input type="time" id="fhs" value="'+esc(rec.hora_salida||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Salida (°F)</label><input type="number" id="fts" value="'+esc(rec.temp_salida||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Oxígeno (%)</label><input type="number" id="fox" value="'+esc(rec.oxigeno||'')+'" placeholder="%" step="0.1" min="0" max="100" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">📊 KPIs</div><div class="card-bd c1"><div class="f"><label>Cut to Cool (horas)</label><input class="calc'+(kw?' warn':'')+'" id="fctc" value="'+esc(cv?cv+' h':'')+'" readonly placeholder="— automático —"></div><div class="f"><label>Tiempo de Ciclo (minutos)</label><input class="calc" id="fcyc" value="'+esc(rec.tiempo_ciclo?rec.tiempo_ciclo+' min':'')+'" readonly placeholder="— automático —"></div>'+(kw?'<div class="kpi-alert-box">⚠️ KPI EXCEDIDO — Cut to Cool supera 4 horas</div>':'')+'</div></div><div style="height:8px"></div></div>';
+function renderForm(id){var rec=APP.records[id]||{};var cl=rec.status==='closed';var ns=cl?1:(rec.producto2?rec.producto3?3:2:1);var pb='';for(var i=0;i<ns;i++)pb+=prodBlock(i,rec,cl);var apb=(!cl&&ns<3)?'<button class="btn btn-gh btn-sm wide" id="btnAP" style="min-height:36px;grid-column:1/-1;">＋ Agregar producto</button>':'';var cv=rec.cut_to_cool||'';var kw=!isNaN(parseFloat(cv))&&parseFloat(cv)>4;ge('opScroll').innerHTML='<div class="fw"><div class="card"><div class="card-hd">🆔 Identificación</div><div class="card-bd"><div class="f"><label>Fecha <span class="req">*</span></label><input type="date" id="fd" value="'+esc(rec.fecha||today())+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Tubo # <span class="req">*</span></label><div class="sel-row">'+mkSel('ftu','tubo',rec.tubo||'',cl?'disabled':'')+(cl?'':'<div class="btn-add-opt" data-ao="tubo">＋</div>')+'</div></div><div class="f wide"><label>Operador <span class="req">*</span></label><input id="fop" value="'+esc(rec.operador||'')+'" placeholder="Nombre del operador" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">🥬 Producto</div><div class="card-bd" id="psw">'+pb+apb+'</div></div><div class="card card-cold"><div class="card-hd">🌡️ Tiempos y Temperaturas</div><div class="card-bd"><div class="f"><label>Hora de Cosecha</label><input type="time" id="fhc" value="'+esc(rec.hora_cosecha||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora Entrada a Tubo</label><input type="time" id="fhe" value="'+esc(rec.hora_entrada||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Entrada (°F)</label><input type="number" id="fte" value="'+esc(rec.temp_entrada||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora de Salida</label><input type="time" id="fhs" value="'+esc(rec.hora_salida||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Salida (°F)</label><input type="number" id="fts" value="'+esc(rec.temp_salida||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Oxígeno (%)</label><input type="number" id="fox" value="'+esc(rec.oxigeno||'')+'" placeholder="%" step="0.1" min="0" max="100" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">📊 KPIs</div><div class="card-bd c1"><div class="f"><label>Cut to Cool (horas)</label><input class="calc'+(kw?' warn':'')+'" id="fctc" value="'+esc(cv?cv+' h':'')+'" readonly placeholder="— automático —"></div><div class="f"><label>Tiempo de Ciclo (minutos)</label><input class="calc" id="fcyc" value="'+esc(rec.tiempo_ciclo?rec.tiempo_ciclo+' min':'')+'" readonly placeholder="— automático —"></div>'+(kw?'<div class="kpi-alert-box">⚠️ KPI EXCEDIDO — Cut to Cool supera 4 horas</div>':'')+'</div></div><div style="height:8px"></div></div>';
   ge('opFoot').style.display=cl?'none':'flex';
   ge('btnCloseC').style.display=cl?'none':'';
   // Wire time inputs
@@ -484,14 +506,29 @@ function doAddOpt(){var v=ge('mAddInput').value.trim();var f=APP.addField;if(!v|
 
 /* ═══════ SUPERVISOR ════════════════════════════ */
 function renderSup(){renderKPIs();renderTubes();renderTable();renderReport();}
-function renderKPIs(){var t=today();var all=Object.values(APP.records);var td=all.filter(function(r){return r.fecha===t;});var act=all.filter(function(r){return r.status!=='closed';}).length;var al=all.filter(function(r){return parseFloat(r.cut_to_cool)>4;}).length;var cn=td.map(function(r){return parseFloat(r.cut_to_cool);}).filter(function(v){return!isNaN(v);});var yn=td.map(function(r){return parseFloat(r.tiempo_ciclo);}).filter(function(v){return!isNaN(v);});ge('kAct').textContent=act;ge('kHoy').textContent=td.length;ge('kAl').textContent=al;ge('kCtc').textContent=cn.length?(cn.reduce(function(a,b){return a+b;},0)/cn.length).toFixed(2)+'h':'—';ge('kCyc').textContent=yn.length?Math.round(yn.reduce(function(a,b){return a+b;},0)/yn.length)+' min':'—';ge('kAlCard').className='kpi-card '+(al>0?'cr':'cg');}
+function renderKPIs(){var t=today();var all=Object.values(APP.records);var td=all.filter(function(r){return r.fecha===t;});var act=all.filter(function(r){return r.status!=='closed';}).length;var al=all.filter(function(r){return parseFloat(r.cut_to_cool)>4;}).length;var cn=td.map(function(r){return parseFloat(r.cut_to_cool);}).filter(function(v){return!isNaN(v);});var yn=td.map(function(r){return parseFloat(r.tiempo_ciclo);}).filter(function(v){return!isNaN(v);});ge('kAct').textContent=act;ge('kHoy').textContent=td.length;ge('kAl').textContent=al;ge('kCtc').textContent=cn.length?(cn.reduce(function(a,b){return a+b;},0)/cn.length).toFixed(2)+'h':'—';ge('kCyc').textContent=yn.length?Math.round(yn.reduce(function(a,b){return a+b;},0)/yn.length)+' min':'—';ge('kAlCard').className='kpi-card '+(al>0?'cr pulse':'cg');}
 function renderTubes(){var op=Object.entries(APP.records).filter(function(e){return e[1].status!=='closed';});var g=ge('tubesGrid');if(!op.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🧊</div><p>No hay ciclos activos ahora.</p></div>';return;}g.innerHTML=op.map(function(e){return tcHTML(e[0],e[1]);}).join('');g.querySelectorAll('.tube-card').forEach(function(c){c.addEventListener('click',function(){openDet(c.dataset.id);});});}
-function tcHTML(id,r){var c=parseFloat(r.cut_to_cool);var ov=!isNaN(c)&&c>4;var p=isNaN(c)?0:Math.min(100,(c/4)*100);var bc=p<75?'ok':p<100?'wa':'ov';var pr=r.producto||'—';if(r.producto2)pr+=' / '+r.producto2;if(r.producto3)pr+=' / '+r.producto3;return'<div class="tube-card'+(ov?' over':'')+'" data-id="'+id+'"><div class="tube-hd"><span class="tube-name">'+(r.tubo||'—')+'</span><span class="badge b-open">⏳ ACTIVO</span></div><div class="tube-bd"><div class="trow"><span class="trow-k">Producto</span><span class="trow-v">'+esc(pr)+'</span></div><div class="trow"><span class="trow-k">Cliente</span><span class="trow-v">'+(r.cliente||'—')+'</span></div><div class="trow"><span class="trow-k">Rancho</span><span class="trow-v">'+(r.rancho||'—')+'</span></div><div class="trow"><span class="trow-k">Operador</span><span class="trow-v">'+(r.operador||'—')+'</span></div><div class="trow"><span class="trow-k">Cut‑Cool</span><span class="trow-v '+(ov?'red':'grn')+'">'+(r.cut_to_cool?r.cut_to_cool+' h':'—')+' '+(ov?'⚠️':'✓')+'</span></div>'+(!isNaN(c)?'<div class="bar-wrap"><div class="bar-lbl"><span>0 h</span><span>límite 4 h</span></div><div class="bar-track"><div class="bar-fill '+bc+'" style="width:'+p+'%"></div></div></div>':'')+'</div></div>';}
+function tcHTML(id,r){var c=parseFloat(r.cut_to_cool);var ov=!isNaN(c)&&c>4;var p=isNaN(c)?0:Math.min(100,(c/4)*100);var coverW=isNaN(c)?100:(100-p);var pr=r.producto||'—';if(r.producto2)pr+=' / '+r.producto2;if(r.producto3)pr+=' / '+r.producto3;return'<div class="tube-card'+(ov?' over':'')+'" data-id="'+id+'"><div class="ctc-track-top"><div class="ctc-cover" style="width:'+coverW+'%"></div></div><div class="tube-hd"><span class="tube-name">'+(r.tubo||'—')+'</span><span class="badge b-open">⏳ ACTIVO</span></div><div class="tube-bd"><div class="trow"><span class="trow-k">Producto</span><span class="trow-v">'+esc(pr)+'</span></div><div class="trow"><span class="trow-k">Cliente</span><span class="trow-v">'+(r.cliente||'—')+'</span></div><div class="trow"><span class="trow-k">Rancho</span><span class="trow-v">'+(r.rancho||'—')+'</span></div><div class="trow"><span class="trow-k">Operador</span><span class="trow-v">'+(r.operador||'—')+'</span></div><div class="trow"><span class="trow-k">Cut‑Cool</span><span class="trow-v '+(ov?'red':'grn')+'">'+(r.cut_to_cool?r.cut_to_cool+' h':'—')+' '+(ov?'⚠️':'✓')+'</span></div></div></div>';}
 function setFilter(m){APP.fMode=m;['All','Open','Closed','Alert'].forEach(function(x){var e=ge('f'+x);if(e)e.className='fbtn'+(x.toLowerCase()===m?' on':'');});renderTable();}
 function renderTable(){var q=(ge('srchInput').value||'').toLowerCase();var recs=Object.entries(APP.records);if(APP.fMode==='open')recs=recs.filter(function(e){return e[1].status!=='closed';});if(APP.fMode==='closed')recs=recs.filter(function(e){return e[1].status==='closed';});if(APP.fMode==='alert')recs=recs.filter(function(e){return parseFloat(e[1].cut_to_cool)>4;});if(q)recs=recs.filter(function(e){return Object.values(e[1]).some(function(v){return String(v).toLowerCase().includes(q);});});recs.sort(function(a,b){var av=a[1][APP.sortF]||'',bv=b[1][APP.sortF]||'';var n=parseFloat(av)-parseFloat(bv);if(!isNaN(n))return APP.sortD==='asc'?n:-n;return APP.sortD==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));});ge('mainTable').querySelectorAll('thead th').forEach(function(th){th.className=th.dataset.f===APP.sortF?(APP.sortD==='asc'?'sa':'sd'):'';});var tb=ge('tblBody'),em=ge('tblEmpty');if(!recs.length){tb.innerHTML='';em.style.display='';return;}em.style.display='none';tb.innerHTML=recs.map(function(e){var id=e[0],r=e[1];var c=parseFloat(r.cut_to_cool),al=!isNaN(c)&&c>4,op=r.status!=='closed';var pr=r.producto||'—';if(r.producto2)pr+=' / '+r.producto2;if(r.producto3)pr+=' / '+r.producto3;return'<tr class="'+(al?'krow':'')+'" data-id="'+id+'"><td class="td-m">'+id+'</td><td>'+(r.fecha||'—')+'</td><td><span class="chip '+chipCls(r.tubo)+'">'+(r.tubo||'—')+'</span></td><td>'+esc(pr)+'</td><td>'+(r.cliente||'—')+'</td><td>'+(r.rancho||'—')+'</td><td>'+(r.cantidad||'—')+'</td><td>'+(r.contenedor||'—')+'</td><td>'+(r.tag||'—')+'</td><td>'+(r.hora_cosecha||'—')+'</td><td>'+(r.hora_entrada||'—')+'</td><td>'+(r.temp_entrada?r.temp_entrada+'°F':'—')+'</td><td>'+(r.hora_salida||'—')+'</td><td>'+(r.temp_salida?r.temp_salida+'°F':'—')+'</td><td>'+(r.oxigeno?r.oxigeno+'%':'—')+'</td><td class="'+(al?'td-r':'td-g')+'">'+(r.cut_to_cool?r.cut_to_cool+' h':'—')+(al?' ⚠️':'')+'</td><td style="color:'+(op?'var(--yellow)':'var(--green)')+'">'+(op?'⏳':'✔')+'</td></tr>';}).join('');tb.querySelectorAll('tr').forEach(function(row){row.addEventListener('click',function(){openDet(row.dataset.id);});});}
 function openDet(id){var r=APP.records[id];if(!r)return;var c=parseFloat(r.cut_to_cool),ov=!isNaN(c)&&c>4;ge('dpTitle').textContent=(r.tubo||'—')+' · '+(r.producto||'—');function row(k,v,cl){return'<div class="dp-row"><span class="dp-k">'+k+'</span><span class="dp-v'+(cl?' '+cl:'')+'">'+(v||'—')+'</span></div>';}function sec(l,rows){return'<div class="dp-sec"><div class="dp-sec-l">'+l+'</div>'+rows+'</div>';}var ep='';if(r.producto2)ep+=row('Producto #2',r.producto2)+row('Cantidad #2',r.cantidad2)+row('Contenedor #2',r.contenedor2)+row('Cliente #2',r.cliente2)+row('Rancho #2',r.rancho2);if(r.producto3)ep+=row('Producto #3',r.producto3)+row('Cantidad #3',r.cantidad3)+row('Contenedor #3',r.contenedor3)+row('Cliente #3',r.cliente3)+row('Rancho #3',r.rancho3);ge('dpBody').innerHTML=sec('Identificación',row('ID',id)+row('Fecha',r.fecha)+row('Tubo',r.tubo)+row('Operador',r.operador)+row('Estado',r.status==='closed'?'✔ Cerrado':'⏳ Abierto',r.status==='closed'?'ok':''))+sec('Producto',row('Producto',r.producto)+row('Cantidad',r.cantidad)+row('Contenedor',r.contenedor)+row('Cliente',r.cliente)+row('Rancho',r.rancho)+row('Lote',r.lote)+row('Tag #',r.tag)+ep)+sec('Tiempos',row('H. Cosecha',r.hora_cosecha)+row('H. Entrada',r.hora_entrada)+row('T. Entrada',r.temp_entrada?r.temp_entrada+'°F':'')+row('H. Salida',r.hora_salida)+row('T. Salida',r.temp_salida?r.temp_salida+'°F':'')+row('Oxígeno',r.oxigeno?r.oxigeno+'%':''))+sec('KPIs',row('Cut to Cool',r.cut_to_cool?r.cut_to_cool+' h':'',ov?'al':'ok')+row('Ciclo',r.tiempo_ciclo?r.tiempo_ciclo+' min':'')+(ov?'<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.28);border-radius:8px;padding:9px 11px;margin-top:8px;font-size:.75rem;color:var(--red);font-weight:700;">⚠️ Cut to Cool excede el límite de 4 horas</div>':''));ge('dpBg').classList.add('open');}
 function renderReport(){var ini=ge('repIni').value;var fin=ge('repFin').value;var recs=Object.values(APP.records);if(ini)recs=recs.filter(function(r){return(r.fecha||'')>=ini;});if(fin)recs=recs.filter(function(r){return(r.fecha||'')<=fin;});var tubos=['RMC7','RMC8','MC3','MC2','Pressure cooler'];var counts={};tubos.forEach(function(t){counts[t]=0;});recs.forEach(function(r){var t=r.tubo||'Otro';if(!(t in counts))counts[t]=0;counts[t]++;if(!tubos.includes(t))tubos.push(t);});var total=recs.length;var body=ge('repBody');if(!total){body.innerHTML='<div class="empty" style="padding:20px 0"><div class="empty-icon">📊</div><p>Sin ciclos en el rango.</p></div>';return;}var maxV=Math.max.apply(null,Object.values(counts).filter(function(v){return v>0;}));var lbl=ini&&fin?ini+' → '+fin:ini?'Desde '+ini:fin?'Hasta '+fin:'Todos los registros';body.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="font-family:\'DM Mono\',monospace;font-size:.68rem;color:var(--t3);">'+lbl+'</span><span style="font-family:\'DM Mono\',monospace;font-size:.8rem;color:var(--cyan);font-weight:500;">Total: '+total+' ciclos</span></div>'+tubos.filter(function(t){return counts[t]>0;}).map(function(t){var cnt=counts[t],pct=Math.round((cnt/total)*100),bw=Math.round((cnt/maxV)*100);return'<div class="rep-row"><span class="chip '+chipCls(t)+'" style="width:130px;justify-content:center;flex-shrink:0;">'+esc(t)+'</span><div class="rep-bar-wrap"><div class="rep-bar" style="width:'+bw+'%"></div></div><span style="font-family:\'DM Mono\',monospace;font-size:.83rem;font-weight:500;min-width:24px;text-align:right;">'+cnt+'</span><span style="font-family:\'DM Mono\',monospace;font-size:.72rem;color:var(--t3);min-width:38px;text-align:right;">'+pct+'%</span></div>';}).join('');}
-function exportCSV(){var recs=Object.values(APP.records);if(!recs.length)return;var H=['ID','Fecha','Tubo','Producto','Cantidad','Contenedor','Cliente','Rancho','Lote','Tag','H.Cosecha','H.Entrada','T.Entrada°F','H.Salida','T.Salida°F','O2%','Cut-Cool(h)','Ciclo(min)','Operador','Estado','Producto2','Cantidad2','Contenedor2','Cliente2','Rancho2','Producto3','Cantidad3','Contenedor3','Cliente3','Rancho3'];var R=recs.map(function(r){return[r.id,r.fecha,r.tubo,r.producto,r.cantidad,r.contenedor,r.cliente,r.rancho,r.lote,r.tag,r.hora_cosecha,r.hora_entrada,r.temp_entrada,r.hora_salida,r.temp_salida,r.oxigeno,r.cut_to_cool,r.tiempo_ciclo,r.operador,r.status==='closed'?'Cerrado':'Abierto',r.producto2,r.cantidad2,r.contenedor2,r.cliente2,r.rancho2,r.producto3,r.cantidad3,r.contenedor3,r.cliente3,r.rancho3].map(function(v){return'"'+(v||'').toString().replace(/"/g,'""')+'"';});});var csv=[H.join(',')].concat(R.map(function(r){return r.join(',');})).join('\n');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));a.download='vcl_'+today()+'.csv';a.click();}
+function exportXLSX(){
+  var recs=Object.values(APP.records);
+  if(!recs.length){toast('Sin registros para exportar','err');return;}
+  var H=['ID','Fecha','Tubo','Producto','Cantidad','Contenedor','Cliente','Rancho','Lote','Tag','H.Cosecha','H.Entrada','T.Entrada°F','H.Salida','T.Salida°F','O2%','Cut-Cool(h)','Ciclo(min)','Operador','Estado','Producto2','Cantidad2','Contenedor2','Cliente2','Rancho2','Producto3','Cantidad3','Contenedor3','Cliente3','Rancho3'];
+  var numIdx=[12,14,15,16,17];
+  function xesc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function xcell(v,isNum){if(v===null||v===undefined||v==='')return '<Cell><Data ss:Type=String></Data></Cell>';var n=parseFloat(v);if(isNum&&!isNaN(n))return '<Cell><Data ss:Type=Number>'+n+'</Data></Cell>';return '<Cell><Data ss:Type=String>'+xesc(String(v))+'</Data></Cell>';}
+  var rows=recs.map(function(r){return[r.id,r.fecha,r.tubo,r.producto,r.cantidad,r.contenedor,r.cliente,r.rancho,r.lote,r.tag,r.hora_cosecha,r.hora_entrada,r.temp_entrada,r.hora_salida,r.temp_salida,r.oxigeno,r.cut_to_cool,r.tiempo_ciclo,r.operador,r.status==='closed'?'Cerrado':'Abierto',r.producto2||'',r.cantidad2||'',r.contenedor2||'',r.cliente2||'',r.rancho2||'',r.producto3||'',r.cantidad3||'',r.contenedor3||'',r.cliente3||'',r.rancho3||''];});
+  var xml='<?xml version=1.0 encoding=UTF-8?><?mso-application progid=Excel.Sheet?><Workbook xmlns=urn:schemas-microsoft-com:office:spreadsheet xmlns:ss=urn:schemas-microsoft-com:office:spreadsheet><Styles><Style ss:ID=h><Font ss:Bold=1/><Interior ss:Color=#DDEEFF ss:Pattern=Solid/></Style></Styles><Worksheet ss:Name=Ciclos><Table>';
+  xml+='<Row>'+H.map(function(h){return'<Cell ss:StyleID=h><Data ss:Type=String>'+xesc(h)+'</Data></Cell>';}).join('')+'</Row>';
+  rows.forEach(function(row){xml+='<Row>'+row.map(function(v,i){return xcell(v,numIdx.indexOf(i)>=0);}).join('')+'</Row>';});
+  xml+='</Table></Worksheet></Workbook>';
+  var b=new Blob(['﻿'+xml],{type:'application/vnd.ms-excel;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='vcl_'+today()+'.xls';a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+}
 /* ─── SERVICE WORKER ─────────────────────────── */
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
 </script>
@@ -512,7 +549,7 @@ const firebaseConfig = {
   measurementId: "G-JD3C3RTD8X"
 };
 
-let db=null, auth=null;
+let db=null, auth=null, unsubCycles=null, unsubLists=null;
 try{
   const app=initializeApp(firebaseConfig);
   db=getDatabase(app);
@@ -544,8 +581,27 @@ if(auth){
       var e1=ge('opUserEmail'),e2=ge('supUserEmail');
       if(e1)e1.textContent=user.email;
       if(e2)e2.textContent=user.email;
+      if(db&&!unsubCycles){
+        unsubCycles=onValue(ref(db,'cycles'),function(snap){
+          APP.records=snap.val()||{};
+          syncDot('on',APP.curRole==='supervisor'?'sup':'op');
+          APP.curRole==='operator'?renderOp():APP.curRole==='supervisor'?renderSup():null;
+        },function(){ syncDot('',APP.curRole==='supervisor'?'sup':'op'); });
+      }
+      if(db&&!unsubLists){
+        unsubLists=onValue(ref(db,'lists'),function(snap){
+          var saved=snap.val()||{};
+          Object.keys(DL).forEach(function(k){
+            var m=DL[k].slice();
+            (saved[k]||[]).forEach(function(v){if(!m.includes(v))m.push(v);});
+            APP.lists[k]=m;
+          });
+        });
+      }
       if(!APP.curRole)showScreen('sRole');
     }else{
+      if(unsubCycles){unsubCycles();unsubCycles=null;}
+      if(unsubLists){unsubLists();unsubLists=null;}
       APP.currentUser=null;
       APP.curRole=null;
       APP.openTabs=[];
@@ -581,19 +637,6 @@ if(db){
     APP.connected=!!snap.val();
     var role=APP.curRole==='supervisor'?'sup':'op';
     syncDot(APP.connected?'on':'',role);
-  });
-  onValue(ref(db,'cycles'),function(snap){
-    APP.records=snap.val()||{};
-    syncDot('on',APP.curRole==='supervisor'?'sup':'op');
-    APP.curRole==='operator'?renderOp():APP.curRole==='supervisor'?renderSup():null;
-  },function(){ syncDot('',APP.curRole==='supervisor'?'sup':'op'); });
-  onValue(ref(db,'lists'),function(snap){
-    var saved=snap.val()||{};
-    Object.keys(DL).forEach(function(k){
-      var m=DL[k].slice();
-      (saved[k]||[]).forEach(function(v){if(!m.includes(v))m.push(v);});
-      APP.lists[k]=m;
-    });
   });
 }
 </script>
