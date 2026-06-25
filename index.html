@@ -3,23 +3,26 @@
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#0b1120">
+<meta name="theme-color" content="#0A1418">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VacuumLog">
 <link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<link rel="icon" href="./icon-192.png">
-<title>VacuumLog ❄️</title>
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="./icons/icon-120.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./icons/icon-16.png">
+<title>VacuumLog · Harvest Tek</title>
 <link href="./index_files/css2" rel="stylesheet">
 <style>
 :root{
-  --bg:#0b1120;--s1:#111827;--s2:#1a2337;--s3:#243048;
-  --b1:#1e3a5f;--b2:#2a4a6f;
-  --cyan:#38bdf8;--green:#34d399;--red:#f87171;
-  --yellow:#fbbf24;--orange:#fb923c;
-  --t1:#e2eaf7;--t2:#8b9dbf;--t3:#4a5c7a;
+  --bg:#0A1418;--s1:#111E22;--s2:#172930;--s3:#1D343E;
+  --b1:#1A4256;--b2:#245268;
+  --cyan:#3BBBF0;--green:#52B84A;--red:#F07070;
+  --yellow:#F5A520;--orange:#E07020;
+  --t1:#E4EEE8;--t2:#7A9E8E;--t3:#3D5E52;
   --r:10px;
   --sbt:env(safe-area-inset-top,0px);
   --sbb:env(safe-area-inset-bottom,0px);
@@ -31,22 +34,24 @@ body{background:var(--bg);color:var(--t1);font-family:'Barlow',sans-serif;overfl
 .screen.active{display:flex;flex-direction:column;}
 /* ROLE */
 #sRole{background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cline x1='20' y1='0' x2='20' y2='40' stroke='rgba(56%2C189%2C248%2C0.05)' stroke-width='0.5'/%3E%3Cline x1='0' y1='20' x2='40' y2='20' stroke='rgba(56%2C189%2C248%2C0.05)' stroke-width='0.5'/%3E%3C/svg%3E");align-items:center;justify-content:center;padding:32px 24px;}
-.r-logo{width:76px;height:76px;border-radius:20px;background:linear-gradient(135deg,var(--cyan),var(--green));display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:22px;box-shadow:0 0 48px rgba(56,189,248,.2);}
+.r-logo{width:76px;height:76px;border-radius:20px;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:22px;box-shadow:0 0 48px rgba(59,187,240,.3);}
+.r-logo img{width:100%;height:100%;object-fit:cover;display:block;}
 .r-title{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;letter-spacing:.06em;margin-bottom:4px;text-align:center;}
 .r-sub{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--t3);letter-spacing:.12em;margin-bottom:44px;text-align:center;}
 .r-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:480px;}
 .r-card{flex:1;min-width:170px;max-width:210px;background:var(--s1);border:2px solid var(--b1);border-radius:16px;padding:28px 18px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:11px;transition:transform .12s,border-color .15s;-webkit-user-select:none;user-select:none;}
 .r-card:active{transform:scale(.95);}
-.r-icon{font-size:2.6rem;}.r-name{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;letter-spacing:.05em;}
+.r-icon{font-size:2.6rem;display:flex;align-items:center;justify-content:center;color:var(--cyan);}.r-name{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;letter-spacing:.05em;}
 .r-desc{font-size:.76rem;color:var(--t2);line-height:1.5;}
 /* HEADER */
 .hdr{flex-shrink:0;background:rgba(11,17,32,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--b1);padding:11px 16px;padding-top:calc(11px + var(--sbt));display:flex;align-items:center;gap:10px;}
-.hdr-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--green));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.hdr-logo{width:34px;height:34px;border-radius:9px;overflow:hidden;flex-shrink:0;}
+.hdr-logo img{width:100%;height:100%;object-fit:cover;display:block;}
 .hdr-info{flex:1;line-height:1.2;}.hdr-info h1{font-size:.9rem;font-weight:800;letter-spacing:.04em;}
 .hdr-info span{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--t3);letter-spacing:.08em;}
 .hdr-badge{font-family:'DM Mono',monospace;font-size:.6rem;font-weight:500;padding:3px 9px;border-radius:20px;letter-spacing:.06em;flex-shrink:0;}
-.badge-op{background:rgba(56,189,248,.1);color:var(--cyan);border:1px solid rgba(56,189,248,.25);}
-.badge-sup{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25);}
+.badge-op{background:rgba(59,187,240,.1);color:var(--cyan);border:1px solid rgba(59,187,240,.25);}
+.badge-sup{background:rgba(82,184,74,.1);color:var(--green);border:1px solid rgba(82,184,74,.25);}
 .sync-wrap{display:flex;align-items:center;gap:5px;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--t3);transition:background .3s;}
 .sync-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);}
@@ -79,7 +84,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .sel-row{display:flex;gap:6px;}.sel-row select{flex:1;}
 .btn-add-opt{width:36px;height:36px;flex-shrink:0;background:var(--s3);border:1px solid var(--b1);border-radius:7px;color:var(--cyan);font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.calc{background:rgba(56,189,248,.05);border-color:rgba(56,189,248,.2);color:var(--cyan);font-weight:500;}
+.calc{background:rgba(59,187,240,.05);border-color:rgba(59,187,240,.2);color:var(--cyan);font-weight:500;}
 .calc.warn{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.3);color:var(--red);font-weight:700;}
 .kpi-alert-box{grid-column:1/-1;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:10px 12px;font-size:.77rem;color:var(--red);font-weight:700;}
 .prod-sep{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:6px 0 2px;font-size:.66rem;font-weight:700;color:var(--cyan);letter-spacing:.07em;text-transform:uppercase;border-top:1px dashed var(--b1);margin-top:4px;}
@@ -97,7 +102,7 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .rc-meta{font-size:.72rem;color:var(--t2);display:flex;gap:8px;flex-wrap:wrap;}
 .rc-pills{font-family:'DM Mono',monospace;font-size:.69rem;margin-top:7px;display:flex;gap:6px;flex-wrap:wrap;}
 .pill{padding:2px 9px;border-radius:20px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);}
-.pill.ok{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.22);color:var(--green);}
+.pill.ok{background:rgba(82,184,74,.08);border-color:rgba(82,184,74,.22);color:var(--green);}
 .pill.al{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.28);color:var(--red);}
 /* BUTTONS */
 .btn{font-family:'Barlow',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.03em;border:none;border-radius:9px;cursor:pointer;padding:13px 18px;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:1;transition:opacity .1s;-webkit-user-select:none;user-select:none;}
@@ -130,7 +135,7 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 #sSup{background:var(--bg);overflow-y:auto;}
 .sup-wrap{padding:18px 20px 48px;max-width:1400px;margin:0 auto;}
 .sup-topbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
-.live-pill{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:.67rem;color:var(--green);background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:20px;padding:4px 12px;}
+.live-pill{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:.67rem;color:var(--green);background:rgba(82,184,74,.08);border:1px solid rgba(82,184,74,.2);border-radius:20px;padding:4px 12px;}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
 .sec-ttl{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:11px;display:flex;align-items:center;gap:10px;}
 .sec-ttl::after{content:'';flex:1;height:1px;background:var(--b1);}
@@ -143,7 +148,7 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .kpi-card.cr{border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.04);}
 @keyframes kpi-pulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,0);}50%{box-shadow:0 0 22px 4px rgba(248,113,113,.28);}}
 .kpi-card.cr.pulse{animation:kpi-pulse 3s ease-in-out infinite;}
-.ctc-track-top{width:100%;height:10px;background:linear-gradient(to right,#34d399 0%,#fbbf24 68%,#f87171 100%);position:relative;flex-shrink:0;}
+.ctc-track-top{width:100%;height:10px;background:linear-gradient(to right,#52B84A 0%,#F5A520 68%,#F07070 100%);position:relative;flex-shrink:0;}
 .ctc-cover{position:absolute;top:0;right:0;bottom:0;background:var(--s1);transition:width .6s;}
 .card-cold{border-left:3px solid var(--cyan)!important;background:rgba(56,189,248,.025)!important;}
 #sOp .card-cold .card-hd{color:var(--cyan);}
@@ -164,7 +169,7 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .srch{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--s1);border:1px solid var(--b1);border-radius:8px;color:var(--t1);padding:7px 11px;width:200px;}
 .srch:focus{outline:none;border-color:var(--cyan);}
 .fbtn{font-family:'Barlow',sans-serif;font-size:.71rem;font-weight:700;background:var(--s1);border:1px solid var(--b1);border-radius:8px;color:var(--t2);padding:6px 12px;cursor:pointer;}
-.fbtn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(56,189,248,.06);}
+.fbtn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(59,187,240,.06);}
 .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--b1);}
 table{width:100%;border-collapse:collapse;font-size:.75rem;}
 thead th{background:var(--s2);padding:9px 11px;text-align:left;font-family:'DM Mono',monospace;font-size:.59rem;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;white-space:nowrap;border-bottom:1px solid var(--b1);cursor:pointer;}
@@ -214,23 +219,23 @@ input.t-err{border-color:var(--red)!important;}
 .auth-hint{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--t3);text-align:center;line-height:1.7;}
 /* INSTALL */
 .install-wrap{margin-top:28px;}
-.btn-install{display:none;align-items:center;gap:7px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:24px;padding:9px 20px;font-family:'Barlow',sans-serif;font-size:.76rem;font-weight:700;color:var(--cyan);cursor:pointer;letter-spacing:.02em;-webkit-user-select:none;user-select:none;transition:background .15s;}
+.btn-install{display:none;align-items:center;gap:7px;background:rgba(59,187,240,.06);border:1px solid rgba(59,187,240,.2);border-radius:24px;padding:9px 20px;font-family:'Barlow',sans-serif;font-size:.76rem;font-weight:700;color:var(--cyan);cursor:pointer;letter-spacing:.02em;-webkit-user-select:none;user-select:none;transition:background .15s;}
 .btn-install:active{background:rgba(56,189,248,.12);}
 .btn-install.visible{display:flex;}
-/* SUPERVISOR LIGHT THEME */
-#sSup{--bg:#f2f5f9;--s1:#ffffff;--s2:#f1f5f9;--s3:#e2e8f0;--b1:#cbd5e1;--b2:#94a3b8;--t1:#0f172a;--t2:#334155;--t3:#64748b;background:#f2f5f9;color:#0f172a;}
-#sSup .hdr{background:rgba(255,255,255,.97);border-bottom:1px solid #cbd5e1;}
-#sSup .hdr-info h1{color:#0f172a;}
-#sSup .hdr-info span{color:#64748b;}
-#sSup .sync-lbl{color:#64748b;}
-#sSup .btn-role{background:#f1f5f9;border-color:#cbd5e1;color:#334155;}
-#sSup .auth-user{color:#334155;}
-#sSup tbody tr{border-bottom:1px solid #e2e8f0;}
-#sSup tbody tr:hover{background:#edf2f8;}
+/* SUPERVISOR LIGHT THEME — Harvest Tek */
+#sSup{--bg:#F3F7F0;--s1:#FFFFFF;--s2:#EBF2E5;--s3:#DDE8D5;--b1:#BBCDB4;--b2:#8AA083;--t1:#162412;--t2:#304828;--t3:#5E7A52;background:#F3F7F0;color:#162412;}
+#sSup .hdr{background:rgba(255,255,255,.97);border-bottom:1px solid #BBCDB4;}
+#sSup .hdr-info h1{color:#162412;}
+#sSup .hdr-info span{color:#5E7A52;}
+#sSup .sync-lbl{color:#5E7A52;}
+#sSup .btn-role{background:#EBF2E5;border-color:#BBCDB4;color:#304828;}
+#sSup .auth-user{color:#304828;}
+#sSup tbody tr{border-bottom:1px solid #DDE8D5;}
+#sSup tbody tr:hover{background:#EBF2E5;}
 #sSup .krow{border-left:3px solid var(--red);}
-/* Historial Completo – encabezados más grandes y sólidos */
-#sSup thead th{background:#dde4ef;color:#0f172a;font-size:.82rem;font-weight:800;letter-spacing:.05em;padding:11px 13px;border-bottom:2px solid #b8c7de;}
-#sSup thead th:hover{color:#334155;}
+/* Historial Completo – encabezados Harvest Tek */
+#sSup thead th{background:#D2E3CA;color:#162412;font-size:.82rem;font-weight:800;letter-spacing:.05em;padding:11px 13px;border-bottom:2px solid #A8BEA0;}
+#sSup thead th:hover{color:#304828;}
 /* Supervisor: KPI numbers más grandes y crisper */
 #sSup .kpi-v{font-size:2.5rem;letter-spacing:-.03em;}
 </style>
@@ -239,7 +244,7 @@ input.t-err{border-color:var(--red)!important;}
 
 <!-- AUTH SCREEN -->
 <div id="sAuth" class="screen active">
-  <div class="r-logo">❄️</div>
+  <div class="r-logo"><img src="./icons/icon-96.png" alt="VacuumLog"></div>
   <div class="r-title">VACUUM LOG</div>
   <div class="r-sub">INICIA SESIÓN PARA CONTINUAR</div>
   <div class="auth-box">
@@ -254,12 +259,12 @@ input.t-err{border-color:var(--red)!important;}
 
 <!-- ROLE SCREEN -->
 <div id="sRole" class="screen">
-  <div class="r-logo">❄️</div>
+  <div class="r-logo"><img src="./icons/icon-96.png" alt="VacuumLog"></div>
   <div class="r-title">VACUUM LOG</div>
   <div class="r-sub">REGISTRO DE ENFRIAMIENTO DE HORTALIZAS</div>
   <div class="r-cards">
-    <div class="r-card op" id="btnRoleOp"><div class="r-icon">📱</div><div class="r-name">OPERADOR</div><div class="r-desc">Registrar ciclos de enfriamiento en campo</div></div>
-    <div class="r-card sup" id="btnRoleSup"><div class="r-icon">🖥️</div><div class="r-name">SUPERVISOR</div><div class="r-desc">Dashboard de monitoreo en tiempo real</div></div>
+    <div class="r-card op" id="btnRoleOp"><div class="r-icon"><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg></div><div class="r-name">OPERADOR</div><div class="r-desc">Registrar ciclos de enfriamiento en campo</div></div>
+    <div class="r-card sup" id="btnRoleSup"><div class="r-icon"><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="r-name">SUPERVISOR</div><div class="r-desc">Dashboard de monitoreo en tiempo real</div></div>
   </div>
   <div class="install-wrap">
     <button class="btn-install" id="btnInstall">⬇ Instalar app en este dispositivo</button>
@@ -269,7 +274,7 @@ input.t-err{border-color:var(--red)!important;}
 <!-- OPERATOR SCREEN -->
 <div id="sOp" class="screen">
   <header class="hdr">
-    <div class="hdr-logo">❄️</div>
+    <div class="hdr-logo"><img src="./icons/icon-40.png" alt="VacuumLog"></div>
     <div class="hdr-info"><h1>VACUUM LOG</h1><span>APP DE OPERADOR</span></div>
     <div class="sync-wrap"><div class="sync-dot" id="opDot"></div><span class="sync-lbl" id="opLbl"></span></div>
     <span class="hdr-badge badge-op">OPERADOR</span>
@@ -292,7 +297,7 @@ input.t-err{border-color:var(--red)!important;}
 <!-- SUPERVISOR SCREEN -->
 <div id="sSup" class="screen">
   <header class="hdr">
-    <div class="hdr-logo">❄️</div>
+    <div class="hdr-logo"><img src="./icons/icon-40.png" alt="VacuumLog"></div>
     <div class="hdr-info"><h1>VACUUM LOG</h1><span>DASHBOARD SUPERVISOR</span></div>
     <div class="sync-wrap"><div class="sync-dot" id="supDot"></div><span class="sync-lbl" id="supLbl"></span></div>
     <span class="hdr-badge badge-sup">SUPERVISOR</span>
