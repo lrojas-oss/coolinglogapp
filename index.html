@@ -166,6 +166,11 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .bar-fill{height:100%;border-radius:2px;transition:width .5s;}
 .bar-fill.ok{background:var(--green);}.bar-fill.wa{background:var(--yellow);}.bar-fill.ov{background:var(--red);}
 .tbl-ctrl{display:flex;gap:8px;align-items:center;margin-bottom:11px;flex-wrap:wrap;}
+.export-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.exp-lbl{font-family:'DM Mono',monospace;font-size:.64rem;color:var(--t3);white-space:nowrap;letter-spacing:.07em;text-transform:uppercase;}
+.exp-date{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--s1);border:1px solid var(--b1);border-radius:8px;color:var(--t1);padding:6px 10px;width:136px;-webkit-appearance:none;appearance:none;transition:border-color .15s;}
+.exp-date:focus{outline:none;border-color:var(--cyan);}
+.exp-sep{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--t3);}
 .srch{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--s1);border:1px solid var(--b1);border-radius:8px;color:var(--t1);padding:7px 11px;width:200px;}
 .srch:focus{outline:none;border-color:var(--cyan);}
 .fbtn{font-family:'Barlow',sans-serif;font-size:.71rem;font-weight:700;background:var(--s1);border:1px solid var(--b1);border-radius:8px;color:var(--t2);padding:6px 12px;cursor:pointer;}
@@ -238,6 +243,7 @@ input.t-err{border-color:var(--red)!important;}
 #sSup thead th:hover{color:#304828;}
 /* Supervisor: KPI numbers más grandes y crisper */
 #sSup .kpi-v{font-size:2.5rem;letter-spacing:-.03em;}
+#sSup .exp-date{background:#fff;border-color:#BBCDB4;color:#162412;}
 </style>
 </head>
 <body>
@@ -308,7 +314,13 @@ input.t-err{border-color:var(--red)!important;}
   <div class="sup-wrap">
     <div class="sup-topbar">
       <div class="live-pill"><div class="live-dot"></div>EN VIVO</div>
-      <button class="btn btn-gh btn-sm" id="btnExport">⬇ Descargar Excel</button>
+      <div class="export-row">
+        <span class="exp-lbl">Periodo:</span>
+        <input type="date" id="expIni" class="exp-date" title="Fecha inicio">
+        <span class="exp-sep">→</span>
+        <input type="date" id="expFin" class="exp-date" title="Fecha fin">
+        <button class="btn btn-gh btn-sm" id="btnExport">⬇ Excel</button>
+      </div>
     </div>
     <div class="kpi-strip">
       <div class="kpi-card ci"><div class="kpi-l">Ciclos activos</div><div class="kpi-v" id="kAct">—</div><div class="kpi-s">En proceso</div></div>
@@ -519,20 +531,58 @@ function renderTable(){var q=(ge('srchInput').value||'').toLowerCase();var recs=
 function openDet(id){var r=APP.records[id];if(!r)return;var c=parseFloat(r.cut_to_cool),ov=!isNaN(c)&&c>4;ge('dpTitle').textContent=(r.tubo||'—')+' · '+(r.producto||'—');function row(k,v,cl){return'<div class="dp-row"><span class="dp-k">'+k+'</span><span class="dp-v'+(cl?' '+cl:'')+'">'+(v||'—')+'</span></div>';}function sec(l,rows){return'<div class="dp-sec"><div class="dp-sec-l">'+l+'</div>'+rows+'</div>';}var ep='';if(r.producto2)ep+=row('Producto #2',r.producto2)+row('Cantidad #2',r.cantidad2)+row('Contenedor #2',r.contenedor2)+row('Cliente #2',r.cliente2)+row('Rancho #2',r.rancho2);if(r.producto3)ep+=row('Producto #3',r.producto3)+row('Cantidad #3',r.cantidad3)+row('Contenedor #3',r.contenedor3)+row('Cliente #3',r.cliente3)+row('Rancho #3',r.rancho3);ge('dpBody').innerHTML=sec('Identificación',row('ID',id)+row('Fecha',r.fecha)+row('Tubo',r.tubo)+row('Operador',r.operador)+row('Estado',r.status==='closed'?'✔ Cerrado':'⏳ Abierto',r.status==='closed'?'ok':''))+sec('Producto',row('Producto',r.producto)+row('Cantidad',r.cantidad)+row('Contenedor',r.contenedor)+row('Cliente',r.cliente)+row('Rancho',r.rancho)+row('Lote',r.lote)+row('Tag #',r.tag)+ep)+sec('Tiempos',row('H. Cosecha',r.hora_cosecha)+row('H. Entrada',r.hora_entrada)+row('T. Entrada',r.temp_entrada?r.temp_entrada+'°F':'')+row('H. Salida',r.hora_salida)+row('T. Salida',r.temp_salida?r.temp_salida+'°F':'')+row('Oxígeno',r.oxigeno?r.oxigeno+'%':''))+sec('KPIs',row('Cut to Cool',r.cut_to_cool?r.cut_to_cool+' h':'',ov?'al':'ok')+row('Ciclo',r.tiempo_ciclo?r.tiempo_ciclo+' min':'')+(ov?'<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.28);border-radius:8px;padding:9px 11px;margin-top:8px;font-size:.75rem;color:var(--red);font-weight:700;">⚠️ Cut to Cool excede el límite de 4 horas</div>':''));ge('dpBg').classList.add('open');}
 function renderReport(){var ini=ge('repIni').value;var fin=ge('repFin').value;var recs=Object.values(APP.records);if(ini)recs=recs.filter(function(r){return(r.fecha||'')>=ini;});if(fin)recs=recs.filter(function(r){return(r.fecha||'')<=fin;});var tubos=['RMC7','RMC8','MC3','MC2','Pressure cooler'];var counts={};tubos.forEach(function(t){counts[t]=0;});recs.forEach(function(r){var t=r.tubo||'Otro';if(!(t in counts))counts[t]=0;counts[t]++;if(!tubos.includes(t))tubos.push(t);});var total=recs.length;var body=ge('repBody');if(!total){body.innerHTML='<div class="empty" style="padding:20px 0"><div class="empty-icon">📊</div><p>Sin ciclos en el rango.</p></div>';return;}var maxV=Math.max.apply(null,Object.values(counts).filter(function(v){return v>0;}));var lbl=ini&&fin?ini+' → '+fin:ini?'Desde '+ini:fin?'Hasta '+fin:'Todos los registros';body.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="font-family:\'DM Mono\',monospace;font-size:.68rem;color:var(--t3);">'+lbl+'</span><span style="font-family:\'DM Mono\',monospace;font-size:.8rem;color:var(--cyan);font-weight:500;">Total: '+total+' ciclos</span></div>'+tubos.filter(function(t){return counts[t]>0;}).map(function(t){var cnt=counts[t],pct=Math.round((cnt/total)*100),bw=Math.round((cnt/maxV)*100);return'<div class="rep-row"><span class="chip '+chipCls(t)+'" style="width:130px;justify-content:center;flex-shrink:0;">'+esc(t)+'</span><div class="rep-bar-wrap"><div class="rep-bar" style="width:'+bw+'%"></div></div><span style="font-family:\'DM Mono\',monospace;font-size:.83rem;font-weight:500;min-width:24px;text-align:right;">'+cnt+'</span><span style="font-family:\'DM Mono\',monospace;font-size:.72rem;color:var(--t3);min-width:38px;text-align:right;">'+pct+'%</span></div>';}).join('');}
 function exportXLSX(){
+  var ini=ge('expIni')?ge('expIni').value:'';
+  var fin=ge('expFin')?ge('expFin').value:'';
   var recs=Object.values(APP.records);
-  if(!recs.length){toast('Sin registros para exportar','err');return;}
-  var H=['ID','Fecha','Tubo','Producto','Cantidad','Contenedor','Cliente','Rancho','Lote','Tag','H.Cosecha','H.Entrada','T.Entrada°F','H.Salida','T.Salida°F','O2%','Cut-Cool(h)','Ciclo(min)','Operador','Estado','Producto2','Cantidad2','Contenedor2','Cliente2','Rancho2','Producto3','Cantidad3','Contenedor3','Cliente3','Rancho3'];
+  if(ini)recs=recs.filter(function(r){return(r.fecha||'')>=ini;});
+  if(fin)recs=recs.filter(function(r){return(r.fecha||'')<=fin;});
+  if(!recs.length){toast('Sin ciclos en el período seleccionado','err');return;}
+  recs.sort(function(a,b){return(a.fecha||'').localeCompare(b.fecha||'');});
+  /* Columnas en el mismo orden que el historial de la tabla, más campos extra */
+  var H=['ID','Fecha','Tubo','Producto','Cliente','Rancho','Cantidad','Contenedor','Lote','Tag #','H. Cosecha','H. Entrada','T. Entrada °F','H. Salida','T. Salida °F','O₂ %','Cut-Cool (h)','Ciclo (min)','Operador','Estado','Producto 2','Cantidad 2','Contenedor 2','Cliente 2','Rancho 2','Lote 2','Producto 3','Cantidad 3','Contenedor 3','Cliente 3','Rancho 3','Lote 3'];
+  /* índices de columnas numéricas: T.Ent(12), T.Sal(14), O2(15), Cut-Cool(16), Ciclo(17) */
   var numIdx=[12,14,15,16,17];
   function xesc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function xcell(v,isNum){if(v===null||v===undefined||v==='')return '<Cell><Data ss:Type=String></Data></Cell>';var n=parseFloat(v);if(isNum&&!isNaN(n))return '<Cell><Data ss:Type=Number>'+n+'</Data></Cell>';return '<Cell><Data ss:Type=String>'+xesc(String(v))+'</Data></Cell>';}
-  var rows=recs.map(function(r){return[r.id,r.fecha,r.tubo,r.producto,r.cantidad,r.contenedor,r.cliente,r.rancho,r.lote,r.tag,r.hora_cosecha,r.hora_entrada,r.temp_entrada,r.hora_salida,r.temp_salida,r.oxigeno,r.cut_to_cool,r.tiempo_ciclo,r.operador,r.status==='closed'?'Cerrado':'Abierto',r.producto2||'',r.cantidad2||'',r.contenedor2||'',r.cliente2||'',r.rancho2||'',r.producto3||'',r.cantidad3||'',r.contenedor3||'',r.cliente3||'',r.rancho3||''];});
-  var xml='<?xml version=1.0 encoding=UTF-8?><?mso-application progid=Excel.Sheet?><Workbook xmlns=urn:schemas-microsoft-com:office:spreadsheet xmlns:ss=urn:schemas-microsoft-com:office:spreadsheet><Styles><Style ss:ID=h><Font ss:Bold=1/><Interior ss:Color=#DDEEFF ss:Pattern=Solid/></Style></Styles><Worksheet ss:Name=Ciclos><Table>';
+  function xcell(v,isNum,sid){
+    var s=sid?' ss:StyleID='+sid:'';
+    if(v===null||v===undefined||v==='')return'<Cell'+s+'><Data ss:Type=String></Data></Cell>';
+    var n=parseFloat(v);
+    if(isNum&&!isNaN(n))return'<Cell'+s+'><Data ss:Type=Number>'+n+'</Data></Cell>';
+    return'<Cell'+s+'><Data ss:Type=String>'+xesc(String(v))+'</Data></Cell>';
+  }
+  var rows=recs.map(function(r){return[
+    r.id,r.fecha,r.tubo,r.producto,r.cliente,r.rancho,r.cantidad,r.contenedor,r.lote,r.tag,
+    r.hora_cosecha,r.hora_entrada,r.temp_entrada,r.hora_salida,r.temp_salida,r.oxigeno,
+    r.cut_to_cool,r.tiempo_ciclo,r.operador,r.status==='closed'?'Cerrado':'Abierto',
+    r.producto2||'',r.cantidad2||'',r.contenedor2||'',r.cliente2||'',r.rancho2||'',r.lote2||'',
+    r.producto3||'',r.cantidad3||'',r.contenedor3||'',r.cliente3||'',r.rancho3||'',r.lote3||''
+  ];});
+  /* Estilos: h=encabezado verde Harvest Tek, al=fila alerta fondo rojo suave, alv=valor Cut-Cool en rojo */
+  var xml='<?xml version=1.0 encoding=UTF-8?><?mso-application progid=Excel.Sheet?>'
+    +'<Workbook xmlns=urn:schemas-microsoft-com:office:spreadsheet xmlns:ss=urn:schemas-microsoft-com:office:spreadsheet>'
+    +'<Styles>'
+    +'<Style ss:ID=h><Font ss:Bold=1 ss:Color=#162412/><Interior ss:Color=#D2E3CA ss:Pattern=Solid/></Style>'
+    +'<Style ss:ID=al><Interior ss:Color=#FEF0EE ss:Pattern=Solid/></Style>'
+    +'<Style ss:ID=alv><Font ss:Bold=1 ss:Color=#CC3333/><Interior ss:Color=#FEF0EE ss:Pattern=Solid/></Style>'
+    +'</Styles>'
+    +'<Worksheet ss:Name=Ciclos><Table>';
   xml+='<Row>'+H.map(function(h){return'<Cell ss:StyleID=h><Data ss:Type=String>'+xesc(h)+'</Data></Cell>';}).join('')+'</Row>';
-  rows.forEach(function(row){xml+='<Row>'+row.map(function(v,i){return xcell(v,numIdx.indexOf(i)>=0);}).join('')+'</Row>';});
+  rows.forEach(function(row){
+    var ctc=parseFloat(row[16]),isAl=!isNaN(ctc)&&ctc>4;
+    xml+='<Row>'+row.map(function(v,i){
+      var num=numIdx.indexOf(i)>=0;
+      if(isAl&&i===16)return xcell(v,num,'alv');
+      if(isAl)return xcell(v,num,'al');
+      return xcell(v,num);
+    }).join('')+'</Row>';
+  });
   xml+='</Table></Worksheet></Workbook>';
   var b=new Blob(['﻿'+xml],{type:'application/vnd.ms-excel;charset=utf-8'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='vcl_'+today()+'.xls';a.click();
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);
+  var nm='HarvestTek_VacuumLog'+(ini?'_'+ini:'')+(fin&&fin!==ini?'_al_'+fin:'')+'_export.xls';
+  a.download=nm;a.click();
   setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  toast('✓ '+recs.length+' ciclos exportados','ok');
 }
 /* ─── SERVICE WORKER ─────────────────────────── */
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
