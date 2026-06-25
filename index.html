@@ -538,48 +538,29 @@ function exportXLSX(){
   if(fin)recs=recs.filter(function(r){return(r.fecha||'')<=fin;});
   if(!recs.length){toast('Sin ciclos en el período seleccionado','err');return;}
   recs.sort(function(a,b){return(a.fecha||'').localeCompare(b.fecha||'');});
-  /* Columnas en el mismo orden que el historial de la tabla, más campos extra */
-  var H=['ID','Fecha','Tubo','Producto','Cliente','Rancho','Cantidad','Contenedor','Lote','Tag #','H. Cosecha','H. Entrada','T. Entrada °F','H. Salida','T. Salida °F','O₂ %','Cut-Cool (h)','Ciclo (min)','Operador','Estado','Producto 2','Cantidad 2','Contenedor 2','Cliente 2','Rancho 2','Lote 2','Producto 3','Cantidad 3','Contenedor 3','Cliente 3','Rancho 3','Lote 3'];
-  /* índices de columnas numéricas: T.Ent(12), T.Sal(14), O2(15), Cut-Cool(16), Ciclo(17) */
-  var numIdx=[12,14,15,16,17];
-  function xesc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function xcell(v,isNum,sid){
-    var s=sid?' ss:StyleID='+sid:'';
-    if(v===null||v===undefined||v==='')return'<Cell'+s+'><Data ss:Type=String></Data></Cell>';
-    var n=parseFloat(v);
-    if(isNum&&!isNaN(n))return'<Cell'+s+'><Data ss:Type=Number>'+n+'</Data></Cell>';
-    return'<Cell'+s+'><Data ss:Type=String>'+xesc(String(v))+'</Data></Cell>';
+  var SEP=';';
+  var H=['ID','Fecha','Tubo','Producto','Cliente','Rancho','Cantidad','Contenedor','Lote','Tag',
+         'H. Cosecha','H. Entrada','T. Entrada F','H. Salida','T. Salida F','O2 %',
+         'Cut-Cool h','Ciclo min','Operador','Estado',
+         'Producto 2','Cantidad 2','Contenedor 2','Cliente 2','Rancho 2','Lote 2',
+         'Producto 3','Cantidad 3','Contenedor 3','Cliente 3','Rancho 3','Lote 3'];
+  function q(v){
+    var s=String(v===null||v===undefined?'':v);
+    return(s.indexOf(SEP)>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.replace(/"/g,'""')+'"':s;
   }
-  var rows=recs.map(function(r){return[
-    r.id,r.fecha,r.tubo,r.producto,r.cliente,r.rancho,r.cantidad,r.contenedor,r.lote,r.tag,
-    r.hora_cosecha,r.hora_entrada,r.temp_entrada,r.hora_salida,r.temp_salida,r.oxigeno,
-    r.cut_to_cool,r.tiempo_ciclo,r.operador,r.status==='closed'?'Cerrado':'Abierto',
-    r.producto2||'',r.cantidad2||'',r.contenedor2||'',r.cliente2||'',r.rancho2||'',r.lote2||'',
-    r.producto3||'',r.cantidad3||'',r.contenedor3||'',r.cliente3||'',r.rancho3||'',r.lote3||''
-  ];});
-  /* Estilos: h=encabezado verde Harvest Tek, al=fila alerta fondo rojo suave, alv=valor Cut-Cool en rojo */
-  var xml='<?xml version=1.0 encoding=UTF-8?><?mso-application progid=Excel.Sheet?>'
-    +'<Workbook xmlns=urn:schemas-microsoft-com:office:spreadsheet xmlns:ss=urn:schemas-microsoft-com:office:spreadsheet>'
-    +'<Styles>'
-    +'<Style ss:ID=h><Font ss:Bold=1 ss:Color=#162412/><Interior ss:Color=#D2E3CA ss:Pattern=Solid/></Style>'
-    +'<Style ss:ID=al><Interior ss:Color=#FEF0EE ss:Pattern=Solid/></Style>'
-    +'<Style ss:ID=alv><Font ss:Bold=1 ss:Color=#CC3333/><Interior ss:Color=#FEF0EE ss:Pattern=Solid/></Style>'
-    +'</Styles>'
-    +'<Worksheet ss:Name=Ciclos><Table>';
-  xml+='<Row>'+H.map(function(h){return'<Cell ss:StyleID=h><Data ss:Type=String>'+xesc(h)+'</Data></Cell>';}).join('')+'</Row>';
-  rows.forEach(function(row){
-    var ctc=parseFloat(row[16]),isAl=!isNaN(ctc)&&ctc>4;
-    xml+='<Row>'+row.map(function(v,i){
-      var num=numIdx.indexOf(i)>=0;
-      if(isAl&&i===16)return xcell(v,num,'alv');
-      if(isAl)return xcell(v,num,'al');
-      return xcell(v,num);
-    }).join('')+'</Row>';
+  var lines=['sep='+SEP, H.map(q).join(SEP)];
+  recs.forEach(function(r){
+    lines.push([
+      r.id,r.fecha,r.tubo,r.producto,r.cliente,r.rancho,r.cantidad,r.contenedor,r.lote,r.tag,
+      r.hora_cosecha,r.hora_entrada,r.temp_entrada,r.hora_salida,r.temp_salida,r.oxigeno,
+      r.cut_to_cool,r.tiempo_ciclo,r.operador,r.status==='closed'?'Cerrado':'Abierto',
+      r.producto2||'',r.cantidad2||'',r.contenedor2||'',r.cliente2||'',r.rancho2||'',r.lote2||'',
+      r.producto3||'',r.cantidad3||'',r.contenedor3||'',r.cliente3||'',r.rancho3||'',r.lote3||''
+    ].map(q).join(SEP));
   });
-  xml+='</Table></Worksheet></Workbook>';
-  var b=new Blob(['﻿'+xml],{type:'application/vnd.ms-excel;charset=utf-8'});
+  var b=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
   var a=document.createElement('a');a.href=URL.createObjectURL(b);
-  var nm='HarvestTek_VacuumLog'+(ini?'_'+ini:'')+(fin&&fin!==ini?'_al_'+fin:'')+'_export.xls';
+  var nm='HarvestTek_VacuumLog'+(ini?'_'+ini:'')+(fin&&fin!==ini?'_al_'+fin:'')+'_export.csv';
   a.download=nm;a.click();
   setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
   toast('✓ '+recs.length+' ciclos exportados','ok');
