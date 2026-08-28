@@ -3,10 +3,10 @@
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#0A1418">
+<meta name="theme-color" content="#F3F7F0">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="VacuumLog">
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
@@ -244,6 +244,14 @@ input.t-err{border-color:var(--red)!important;}
 /* Supervisor: KPI numbers más grandes y crisper */
 #sSup .kpi-v{font-size:2.5rem;letter-spacing:-.03em;}
 #sSup .exp-date{background:#fff;border-color:#BBCDB4;color:#162412;}
+/* OPERATOR LIGHT THEME — Harvest Tek */
+#sOp{--bg:#F3F7F0;--s1:#FFFFFF;--s2:#EBF2E5;--s3:#DDE8D5;--b1:#BBCDB4;--b2:#8AA083;--t1:#162412;--t2:#304828;--t3:#5E7A52;background:#F3F7F0;color:#162412;}
+#sOp .hdr{background:rgba(255,255,255,.97);border-bottom:1px solid #BBCDB4;}
+#sOp .hdr-info h1{color:#162412;}
+#sOp .hdr-info span{color:#5E7A52;}
+#sOp .sync-lbl{color:#5E7A52;}
+#sOp .btn-role{background:#EBF2E5;border-color:#BBCDB4;color:#304828;}
+#sOp .auth-user{color:#304828;}
 </style>
 </head>
 <body>
@@ -294,6 +302,7 @@ input.t-err{border-color:var(--red)!important;}
   </div>
   <div class="op-scroll" id="opScroll"></div>
   <div class="op-foot" id="opFoot" style="display:none;">
+    <button class="btn btn-re btn-sm" id="btnDelete" style="display:none;">🗑️ Eliminar</button>
     <button class="btn btn-gh" id="btnDraft">💾 Borrador</button>
     <button class="btn btn-re" id="btnCloseC" style="display:none;">✔ Cerrar Ciclo</button>
     <button class="btn btn-cy" id="btnSave">Guardar ›</button>
@@ -381,6 +390,19 @@ input.t-err{border-color:var(--red)!important;}
   </div>
 </div>
 
+<!-- MODAL: DELETE CYCLE CONFIRM -->
+<div class="modal-bg" id="modalDelete">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <h3>¿Eliminar este ciclo?</h3>
+    <p>El registro se borrará por completo y <strong>no podrá recuperarse</strong>. Dejará de contarse como ciclo activo.</p>
+    <div class="modal-btns">
+      <button class="btn btn-gh" id="mDeleteCancelBtn">Cancelar</button>
+      <button class="btn btn-re" id="mDeleteOkBtn">🗑️ Eliminar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: ADD LIST OPTION -->
 <div class="modal-bg" id="modalAddOpt">
   <div class="modal-box">
@@ -461,6 +483,11 @@ ge('btnCloseC').addEventListener('click',function(){ge('modalClose').classList.a
 ge('mCloseCancelBtn').addEventListener('click',function(){ge('modalClose').classList.remove('open');});
 ge('mCloseOkBtn').addEventListener('click',function(){ge('modalClose').classList.remove('open');doClose();});
 ge('modalClose').addEventListener('click',function(e){if(e.target===ge('modalClose'))ge('modalClose').classList.remove('open');});
+/* ─── MODAL: DELETE CYCLE ───────────────────── */
+ge('btnDelete').addEventListener('click',function(){ge('modalDelete').classList.add('open');});
+ge('mDeleteCancelBtn').addEventListener('click',function(){ge('modalDelete').classList.remove('open');});
+ge('mDeleteOkBtn').addEventListener('click',function(){ge('modalDelete').classList.remove('open');doDelete();});
+ge('modalDelete').addEventListener('click',function(e){if(e.target===ge('modalDelete'))ge('modalDelete').classList.remove('open');});
 /* ─── MODAL: ADD OPT ────────────────────────── */
 ge('mAddCancelBtn').addEventListener('click',function(){ge('modalAddOpt').classList.remove('open');});
 ge('mAddOkBtn').addEventListener('click',doAddOpt);
@@ -493,6 +520,7 @@ function prodBlock(i,rec,dis){var s=i===0?'':String(i+1);var d=dis;var n=i===0?'
 function renderForm(id){var rec=APP.records[id]||{};var cl=rec.status==='closed';var ns=cl?1:(rec.producto2?rec.producto3?3:2:1);var pb='';for(var i=0;i<ns;i++)pb+=prodBlock(i,rec,cl);var apb=(!cl&&ns<3)?'<button class="btn btn-gh btn-sm wide" id="btnAP" style="min-height:36px;grid-column:1/-1;">＋ Agregar producto</button>':'';var cv=rec.cut_to_cool||'';var kw=!isNaN(parseFloat(cv))&&parseFloat(cv)>4;ge('opScroll').innerHTML='<div class="fw"><div class="card"><div class="card-hd">🆔 Identificación</div><div class="card-bd"><div class="f"><label>Fecha <span class="req">*</span></label><input type="date" id="fd" value="'+esc(rec.fecha||today())+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Tubo # <span class="req">*</span></label><div class="sel-row">'+mkSel('ftu','tubo',rec.tubo||'',cl?'disabled':'')+(cl?'':'<div class="btn-add-opt" data-ao="tubo">＋</div>')+'</div></div><div class="f wide"><label>Operador <span class="req">*</span></label><input id="fop" value="'+esc(rec.operador||'')+'" placeholder="Nombre del operador" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">🥬 Producto</div><div class="card-bd" id="psw">'+pb+apb+'</div></div><div class="card card-cold"><div class="card-hd">🌡️ Tiempos y Temperaturas</div><div class="card-bd"><div class="f"><label>Hora de Cosecha</label><input type="time" id="fhc" value="'+esc(rec.hora_cosecha||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora Entrada a Tubo</label><input type="time" id="fhe" value="'+esc(rec.hora_entrada||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Entrada (°F)</label><input type="number" id="fte" value="'+esc(rec.temp_entrada||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Hora de Salida</label><input type="time" id="fhs" value="'+esc(rec.hora_salida||'')+'" '+(cl?'disabled':'')+'></div><div class="f"><label>T. Salida (°F)</label><input type="number" id="fts" value="'+esc(rec.temp_salida||'')+'" placeholder="°F" step="0.1" min="'+TEMP_MIN+'" max="'+TEMP_MAX+'" '+(cl?'disabled':'')+'></div><div class="f"><label>Oxígeno (%)</label><input type="number" id="fox" value="'+esc(rec.oxigeno||'')+'" placeholder="%" step="0.1" min="0" max="100" '+(cl?'disabled':'')+'></div></div></div><div class="card"><div class="card-hd">📊 KPIs</div><div class="card-bd c1"><div class="f"><label>Cut to Cool (horas)</label><input class="calc'+(kw?' warn':'')+'" id="fctc" value="'+esc(cv?cv+' h':'')+'" readonly placeholder="— automático —"></div><div class="f"><label>Tiempo de Ciclo (minutos)</label><input class="calc" id="fcyc" value="'+esc(rec.tiempo_ciclo?rec.tiempo_ciclo+' min':'')+'" readonly placeholder="— automático —"></div>'+(kw?'<div class="kpi-alert-box">⚠️ KPI EXCEDIDO — Cut to Cool supera 4 horas</div>':'')+'</div></div><div style="height:8px"></div></div>';
   ge('opFoot').style.display=cl?'none':'flex';
   ge('btnCloseC').style.display=cl?'none':'';
+  ge('btnDelete').style.display=cl?'none':'';
   // Wire time inputs
   ['fhc','fhe','fhs'].forEach(function(fid){var e=ge(fid);if(e)e.addEventListener('input',calcF);});
   ['fte','fts'].forEach(function(fid){var e=ge(fid);if(e)e.addEventListener('input',function(){setTempErr(fid,validateTemp(e.value));});});
@@ -518,6 +546,7 @@ function getFD(){var data={fecha:gv('fd'),tubo:gv('ftu'),operador:gv('fop'),hora
 function saveRec(silent){var id=APP.curTab;if(id==='list')return;if(!silent&&!validateTemps()){toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:(APP.records[id]||{}).status||'open',createdAt:(APP.records[id]||{}).createdAt||Date.now(),updatedAt:Date.now()});APP.records[id]=pl;window.fbWrite('cycles/'+id,pl).then(function(){syncDot('on','op');}).catch(function(){syncDot('','op');});if(!silent)toast('✓ Guardado','ok');renderTabs();}
 function newCycle(){var id='CYC-'+Date.now().toString(36).toUpperCase();var r={id:id,fecha:today(),status:'open',createdAt:Date.now()};APP.records[id]=r;window.fbWrite('cycles/'+id,r).catch(function(){});APP.openTabs.push(id);APP.curTab=id;renderOp();}
 function doClose(){var id=APP.curTab;if(id==='list')return;if(!validateTemps()){ge('modalClose').classList.remove('open');toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:'closed',closedAt:Date.now(),updatedAt:Date.now()});APP.records[id]=pl;window.fbWrite('cycles/'+id,pl).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast('✔ Ciclo cerrado','ok');}
+function doDelete(){var id=APP.curTab;if(id==='list')return;delete APP.records[id];window.fbWrite('cycles/'+id,null).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast('🗑️ Ciclo eliminado','ok');}
 function openAddOpt(f){APP.addField=f;var labs={tubo:'Tubo #',producto:'Producto',contenedor:'Contenedor',cliente:'Cliente',rancho:'Rancho'};ge('mAddLbl').textContent='Nuevo valor para "'+(labs[f]||f)+'":';ge('mAddInput').value='';ge('modalAddOpt').classList.add('open');setTimeout(function(){ge('mAddInput').focus();},300);}
 function doAddOpt(){var v=ge('mAddInput').value.trim();var f=APP.addField;if(!v||!f){ge('modalAddOpt').classList.remove('open');return;}if(APP.lists[f].includes(v)){toast('Ya existe','err');return;}APP.lists[f].push(v);var ex=APP.lists[f].filter(function(x){return!DL[f].includes(x);});window.fbWrite('lists/'+f,ex).catch(function(){});ge('modalAddOpt').classList.remove('open');toast('✓ "'+v+'" agregado','ok');if(APP.curTab!=='list')renderForm(APP.curTab);}
 

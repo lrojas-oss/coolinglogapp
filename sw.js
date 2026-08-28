@@ -1,4 +1,4 @@
-const CACHE = 'vcl-v3';
+const CACHE = 'vcl-v4';
 const SHELL = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', function(e) {
