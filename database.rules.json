@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "cycles": {
+      ".read": "auth != null && (auth.token.email.matches(/.*@harvesttekmex\\.com$/) || auth.token.email.matches(/.*@sfcos\\.com$/))",
+      ".write": "auth != null && (auth.token.email.matches(/.*@harvesttekmex\\.com$/) || auth.token.email.matches(/.*@sfcos\\.com$/))"
+    },
+    "lists": {
+      ".read": "auth != null && (auth.token.email.matches(/.*@harvesttekmex\\.com$/) || auth.token.email.matches(/.*@sfcos\\.com$/))",
+      ".write": "auth != null && (auth.token.email.matches(/.*@harvesttekmex\\.com$/) || auth.token.email.matches(/.*@sfcos\\.com$/))"
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
