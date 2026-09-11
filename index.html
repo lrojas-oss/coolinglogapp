@@ -669,7 +669,8 @@ const ALLOWED_DOMAINS=['harvesttekmex.com','sfcos.com'];
 if(auth){
   getRedirectResult(auth).catch(function(err){
     if(err&&err.code&&err.code!=='auth/no-auth-event'){
-      ge('authErr').textContent='Error al iniciar sesión ('+err.code+').';
+      console.error('getRedirectResult error:',err,JSON.stringify(err&&err.customData||{}));
+      ge('authErr').textContent='Error al iniciar sesión ('+err.code+'): '+(err.message||'')+' '+JSON.stringify(err.customData||{});
       ge('authErr').classList.add('show');
     }
   });
@@ -728,11 +729,12 @@ if(auth){
     btn.disabled=true;lbl.textContent='Abriendo Google...';errEl.classList.remove('show');
     if(isMobile){signInWithRedirect(auth,new GoogleAuthProvider());return;}
     signInWithPopup(auth,new GoogleAuthProvider()).catch(function(err){
-      if(err.code==='auth/popup-blocked'||err.code==='auth/internal-error'){signInWithRedirect(auth,new GoogleAuthProvider());return;}
+      if(err.code==='auth/popup-blocked'){signInWithRedirect(auth,new GoogleAuthProvider());return;}
       if(err.code==='auth/popup-closed-by-user'||err.code==='auth/cancelled-popup-request'){
         btn.disabled=false;lbl.textContent='Continuar con Google';return;
       }
-      errEl.textContent=err.code==='auth/network-request-failed'?'Sin conexión a Internet.':'Error al iniciar sesión ('+err.code+').';
+      console.error('signInWithPopup error:',err,JSON.stringify(err&&err.customData||{}));
+      errEl.textContent=err.code==='auth/network-request-failed'?'Sin conexión a Internet.':'Error al iniciar sesión ('+err.code+'): '+(err.message||'')+' '+JSON.stringify(err.customData||{});
       errEl.classList.add('show');
       btn.disabled=false;lbl.textContent='Continuar con Google';
     });
