@@ -19,9 +19,12 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
-  // Always network-first for Firebase
+  // Don't intercept Firebase SDK/CDN requests: let the browser handle them
+  // directly. Routing cross-origin dynamic import()s through respondWith()
+  // here caused "Failed to fetch dynamically imported module" on mobile
+  // even with a working connection, since nothing populates the cache
+  // fallback and SW-mediated module fetches are flaky on some browsers.
   if (url.includes('firebase') || url.includes('googleapis') || url.includes('gstatic')) {
-    e.respondWith(fetch(e.request).catch(function(){ return caches.match(e.request); }));
     return;
   }
   // Cache-first for app shell, network fallback
