@@ -670,7 +670,7 @@ if(auth){
   getRedirectResult(auth).catch(function(err){
     if(err&&err.code&&err.code!=='auth/no-auth-event'){
       console.error('getRedirectResult error:',err,JSON.stringify(err&&err.customData||{}));
-      ge('authErr').textContent='Error al iniciar sesión ('+err.code+'): '+(err.message||'')+' '+JSON.stringify(err.customData||{});
+      ge('authErr').textContent=authErrText(err);
       ge('authErr').classList.add('show');
     }
   });
@@ -723,18 +723,21 @@ if(auth){
     }
   });
 
-  var isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  function authErrText(err){
+    if(err.code==='auth/network-request-failed')return'Sin conexión a Internet.';
+    if(err.code==='auth/missing-initial-state')return'Tu navegador bloqueó el almacenamiento necesario para iniciar sesión (modo privado/incógnito o restricciones de cookies de terceros). Intenta en una pestaña normal, no privada.';
+    return'Error al iniciar sesión ('+err.code+'): '+(err.message||'')+' '+JSON.stringify(err.customData||{});
+  }
   window.doSignIn=function(){
     var btn=ge('btnSignIn'),lbl=ge('btnSignInLbl'),errEl=ge('authErr');
     btn.disabled=true;lbl.textContent='Abriendo Google...';errEl.classList.remove('show');
-    if(isMobile){signInWithRedirect(auth,new GoogleAuthProvider());return;}
     signInWithPopup(auth,new GoogleAuthProvider()).catch(function(err){
       if(err.code==='auth/popup-blocked'){signInWithRedirect(auth,new GoogleAuthProvider());return;}
       if(err.code==='auth/popup-closed-by-user'||err.code==='auth/cancelled-popup-request'){
         btn.disabled=false;lbl.textContent='Continuar con Google';return;
       }
       console.error('signInWithPopup error:',err,JSON.stringify(err&&err.customData||{}));
-      errEl.textContent=err.code==='auth/network-request-failed'?'Sin conexión a Internet.':'Error al iniciar sesión ('+err.code+'): '+(err.message||'')+' '+JSON.stringify(err.customData||{});
+      errEl.textContent=authErrText(err);
       errEl.classList.add('show');
       btn.disabled=false;lbl.textContent='Continuar con Google';
     });
