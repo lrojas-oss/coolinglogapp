@@ -18,15 +18,13 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', function(e) {
-  var url = e.request.url;
-  // Don't intercept Firebase SDK/CDN requests: let the browser handle them
-  // directly. Routing cross-origin dynamic import()s through respondWith()
-  // here caused "Failed to fetch dynamically imported module" on mobile
-  // even with a working connection, since nothing populates the cache
-  // fallback and SW-mediated module fetches are flaky on some browsers.
-  if (url.includes('firebase') || url.includes('googleapis') || url.includes('gstatic')) {
-    return;
-  }
+  // Only handle same-origin requests. Routing cross-origin requests (CDN
+  // scripts, Firebase/Google auth endpoints) through cache.match/put here
+  // produces opaque (no-cors) responses that some of those services choke
+  // on — this is what caused auth/internal-error (apis.google.com/js/api.js
+  // returned garbled/503-like responses only when proxied through this SW).
+  // Let the browser handle every cross-origin request directly.
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   // Cache-first for app shell, network fallback
   e.respondWith(
     caches.match(e.request).then(function(cached){
