@@ -782,14 +782,16 @@ if(db){
     if(APP.connected)flushPending();
   });
   /* Firebase RTDB no siempre reconecta solo tras estar offline un rato o cambiar de red
-     (wifi<->datos): forzamos ciclo goOffline/goOnline al detectar red, más un reintento
-     periódico de respaldo mientras haya escrituras pendientes. */
-  window.addEventListener('online',function(){try{goOffline(db);goOnline(db);}catch(e){}});
+     (wifi<->datos): forzamos ciclo goOffline/goOnline al detectar red, al volver a la
+     pestaña/app, y en un reintento periódico de respaldo. navigator.onLine NO se usa
+     como condición: en Android se queda pegado en false tras un toggle de datos/wifi,
+     justo el caso que queremos arreglar. */
+  function forceReconnect(){try{goOffline(db);goOnline(db);}catch(e){}}
+  window.addEventListener('online',forceReconnect);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&!APP.connected)forceReconnect();});
   setInterval(function(){
-    if(navigator.onLine&&Object.keys(APP.pending).length){
-      try{goOffline(db);goOnline(db);}catch(e){}
-      flushPending();
-    }
+    if(!APP.connected)forceReconnect();
+    if(Object.keys(APP.pending).length)flushPending();
   },15000);
 }
 </script>
