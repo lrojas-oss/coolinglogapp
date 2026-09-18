@@ -448,6 +448,25 @@ try{
   var _cc=localStorage.getItem('cache_cycles');if(_cc)APP.records=JSON.parse(_cc);
   var _cl=localStorage.getItem('cache_lists');if(_cl){var _sv=JSON.parse(_cl);Object.keys(DL).forEach(function(k){var m=DL[k].slice();(_sv[k]||[]).forEach(function(v){if(!m.includes(v))m.push(v);});APP.lists[k]=m;});}
 }catch(e){}
+/* ─── COLA DE ESCRITURAS PENDIENTES (no perder datos con conexión inestable) ─── */
+try{APP.pending=JSON.parse(localStorage.getItem('pending_writes')||'{}');}catch(e){APP.pending={};}
+function persistPending(){try{localStorage.setItem('pending_writes',JSON.stringify(APP.pending));}catch(e){}}
+function queueWrite(path,data){
+  APP.pending[path]=data;persistPending();
+  return window.fbWrite(path,data).then(function(r){
+    if(APP.pending[path]===data){delete APP.pending[path];persistPending();}
+    return r;
+  });
+}
+function flushPending(){
+  Object.keys(APP.pending).forEach(function(path){
+    var data=APP.pending[path];
+    window.fbWrite(path,data).then(function(){
+      if(APP.pending[path]===data){delete APP.pending[path];persistPending();}
+    }).catch(function(){});
+  });
+}
+window.addEventListener('online',flushPending);
 /* ─── FIREBASE PLACEHOLDER ──────────────────── */
 window.fbWrite=function(){return Promise.resolve();};
 window.doSignIn=function(){toast('Conectando con Firebase...','ok');};
@@ -570,12 +589,12 @@ function calcF(){var c=gv('fhc'),e=gv('fhe'),s=gv('fhs');var ce=ge('fctc'),cy=ge
 function getFD(){var data={fecha:gv('fd'),tubo:gv('ftu'),operador:gv('fop'),hora_cosecha:gv('fhc'),hora_entrada:gv('fhe'),temp_entrada:gv('fte'),hora_salida:gv('fhs'),temp_salida:gv('fts'),oxigeno:gv('fox'),cut_to_cool:gv('fctc').replace(' h','').trim(),tiempo_ciclo:gv('fcyc').replace(' min','').trim()};for(var i=0;i<3;i++){var s=i===0?'':String(i+1);var el=ge('fp'+s);if(el){data['producto'+s]=gv('fp'+s);data['contenedor'+s]=gv('fc'+s);data['cliente'+s]=gv('fcl'+s);data['rancho'+s]=gv('fr'+s);data['cantidad'+s]=gv('fca'+s);data['lote'+s]=gv('fl'+s);data['tag'+s]=gv('ft'+s);}else{data['producto'+s]=data['contenedor'+s]=data['cliente'+s]=data['rancho'+s]=data['cantidad'+s]=data['lote'+s]=data['tag'+s]='';}}return data;}
 function persistCache(){try{localStorage.setItem('cache_cycles',JSON.stringify(APP.records));}catch(e){}}
 function persistListsCache(){try{localStorage.setItem('cache_lists',JSON.stringify(APP.lists));}catch(e){}}
-function saveRec(silent){var id=APP.curTab;if(id==='list')return;if(!silent&&!validateTemps()){toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:(APP.records[id]||{}).status||'open',createdAt:(APP.records[id]||{}).createdAt||Date.now(),updatedAt:Date.now()});APP.records[id]=pl;persistCache();saveDraft(id);window.fbWrite('cycles/'+id,pl).then(function(){clearDraft(id);syncDot('on','op');}).catch(function(){syncDot('','op');});if(!silent)toast(navigator.onLine?'✓ Guardado':'⚠ Sin conexión — guardado local, se enviará al reconectar','ok');renderTabs();}
-function newCycle(){var id='CYC-'+Date.now().toString(36).toUpperCase();var r={id:id,fecha:today(),status:'open',createdAt:Date.now()};APP.records[id]=r;persistCache();window.fbWrite('cycles/'+id,r).catch(function(){});APP.openTabs.push(id);APP.curTab=id;renderOp();}
-function doClose(){var id=APP.curTab;if(id==='list')return;if(!validateTemps()){ge('modalClose').classList.remove('open');toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:'closed',closedAt:Date.now(),updatedAt:Date.now()});APP.records[id]=pl;persistCache();clearDraft(id);window.fbWrite('cycles/'+id,pl).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast(navigator.onLine?'✔ Ciclo cerrado':'⚠ Cerrado localmente — se enviará al reconectar','ok');}
-function doDelete(){var id=APP.curTab;if(id==='list')return;delete APP.records[id];persistCache();clearDraft(id);window.fbWrite('cycles/'+id,null).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast('🗑️ Ciclo eliminado','ok');}
+function saveRec(silent){var id=APP.curTab;if(id==='list')return;if(!silent&&!validateTemps()){toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:(APP.records[id]||{}).status||'open',createdAt:(APP.records[id]||{}).createdAt||Date.now(),updatedAt:Date.now()});APP.records[id]=pl;persistCache();saveDraft(id);queueWrite('cycles/'+id,pl).then(function(){clearDraft(id);syncDot('on','op');}).catch(function(){syncDot('','op');});if(!silent)toast(navigator.onLine?'✓ Guardado':'⚠ Sin conexión — guardado local, se enviará al reconectar','ok');renderTabs();}
+function newCycle(){var id='CYC-'+Date.now().toString(36).toUpperCase();var r={id:id,fecha:today(),status:'open',createdAt:Date.now()};APP.records[id]=r;persistCache();queueWrite('cycles/'+id,r).catch(function(){});APP.openTabs.push(id);APP.curTab=id;renderOp();}
+function doClose(){var id=APP.curTab;if(id==='list')return;if(!validateTemps()){ge('modalClose').classList.remove('open');toast('Temperatura fuera de rango ('+TEMP_MIN+'–'+TEMP_MAX+'°F)','err');return;}var pl=Object.assign({},APP.records[id]||{},getFD(),{id:id,status:'closed',closedAt:Date.now(),updatedAt:Date.now()});APP.records[id]=pl;persistCache();clearDraft(id);queueWrite('cycles/'+id,pl).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast(navigator.onLine?'✔ Ciclo cerrado':'⚠ Cerrado localmente — se enviará al reconectar','ok');}
+function doDelete(){var id=APP.curTab;if(id==='list')return;delete APP.records[id];persistCache();clearDraft(id);queueWrite('cycles/'+id,null).catch(function(){});APP.openTabs=APP.openTabs.filter(function(t){return t!==id;});APP.curTab='list';renderOp();toast('🗑️ Ciclo eliminado','ok');}
 function openAddOpt(f){APP.addField=f;var labs={tubo:'Tubo #',producto:'Producto',contenedor:'Contenedor',cliente:'Cliente',rancho:'Rancho'};ge('mAddLbl').textContent='Nuevo valor para "'+(labs[f]||f)+'":';ge('mAddInput').value='';ge('modalAddOpt').classList.add('open');setTimeout(function(){ge('mAddInput').focus();},300);}
-function doAddOpt(){var v=ge('mAddInput').value.trim();var f=APP.addField;if(!v||!f){ge('modalAddOpt').classList.remove('open');return;}if(APP.lists[f].includes(v)){toast('Ya existe','err');return;}APP.lists[f].push(v);persistListsCache();var ex=APP.lists[f].filter(function(x){return!DL[f].includes(x);});window.fbWrite('lists/'+f,ex).catch(function(){});ge('modalAddOpt').classList.remove('open');toast('✓ "'+v+'" agregado','ok');if(APP.curTab!=='list')renderForm(APP.curTab);}
+function doAddOpt(){var v=ge('mAddInput').value.trim();var f=APP.addField;if(!v||!f){ge('modalAddOpt').classList.remove('open');return;}if(APP.lists[f].includes(v)){toast('Ya existe','err');return;}APP.lists[f].push(v);persistListsCache();var ex=APP.lists[f].filter(function(x){return!DL[f].includes(x);});queueWrite('lists/'+f,ex).catch(function(){});ge('modalAddOpt').classList.remove('open');toast('✓ "'+v+'" agregado','ok');if(APP.curTab!=='list')renderForm(APP.curTab);}
 
 /* ═══════ SUPERVISOR ════════════════════════════ */
 function renderSup(){renderKPIs();renderTubes();renderTable();renderReport();}
@@ -691,7 +710,13 @@ if(auth){
       if(e2)e2.textContent=user.email;
       if(db&&!unsubCycles){
         unsubCycles=onValue(ref(db,'cycles'),function(snap){
-          APP.records=snap.val()||{};
+          var server=snap.val()||{};
+          Object.keys(APP.pending).forEach(function(p){
+            var m=p.match(/^cycles\/(.+)$/);
+            if(!m)return;
+            if(APP.pending[p]===null)delete server[m[1]];else server[m[1]]=APP.pending[p];
+          });
+          APP.records=server;
           persistCache();
           syncDot('on',APP.curRole==='supervisor'?'sup':'op');
           APP.curRole==='operator'?renderOp():APP.curRole==='supervisor'?renderSup():null;
@@ -753,6 +778,7 @@ if(db){
     APP.connected=!!snap.val();
     var role=APP.curRole==='supervisor'?'sup':'op';
     syncDot(APP.connected?'on':'',role);
+    if(APP.connected)flushPending();
   });
 }
 </script>
