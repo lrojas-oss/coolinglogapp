@@ -464,7 +464,7 @@ function flushPending(){
     var data=APP.pending[path];
     window.fbWrite(path,data).then(function(){
       if(APP.pending[path]===data){delete APP.pending[path];persistPending();refreshSyncUI();}
-    }).catch(function(){});
+    }).catch(function(e){console.error('[flushPending]',path,e&&e.code,e&&e.message);});
   });
 }
 window.addEventListener('online',flushPending);
@@ -486,7 +486,7 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function ge(id){return document.getElementById(id);}
 function gv(id){var e=ge(id);return e?e.value:'';}
 function toast(msg,type){var e=ge('toast');e.textContent=msg;e.className='show '+(type||'ok');clearTimeout(e._t);e._t=setTimeout(function(){e.className='';},2600);}
-function syncDot(s,role){var p=role||'op';var d=ge(p+'Dot');var l=ge(p+'Lbl');if(!d)return;d.className='sync-dot'+(s==='on'?' on':s==='sy'?' sy':'');var n=Object.keys(APP.pending||{}).length;l.textContent=(s==='on'?'En línea':s==='sy'?'Sync...':'Sin conexión')+(n?' · '+n+' pendiente'+(n>1?'s':'')+' de subir':'');}
+function syncDot(s,role){var p=role||'op';var d=ge(p+'Dot');var l=ge(p+'Lbl');if(!d)return;d.className='sync-dot'+(s==='on'?' on':s==='sy'?' sy':'');var n=Object.keys(APP.pending||{}).length;var base=s==='on'?'En línea':s==='sy'?'Sync...':'Sin conexión'+(APP.lastSyncError?' ('+APP.lastSyncError+')':'');l.textContent=base+(n?' · '+n+' pendiente'+(n>1?'s':'')+' de subir':'');}
 /* ─── DETECTAR NAVEGADOR EMBEBIDO (WhatsApp/Facebook/etc.) ─── */
 (function(){
   var ua=navigator.userAgent||'';
@@ -719,9 +719,14 @@ if(auth){
           });
           APP.records=server;
           persistCache();
+          APP.lastSyncError=null;
           syncDot('on',APP.curRole==='supervisor'?'sup':'op');
           APP.curRole==='operator'?renderOp():APP.curRole==='supervisor'?renderSup():null;
-        },function(){ syncDot('',APP.curRole==='supervisor'?'sup':'op'); });
+        },function(err){
+          console.error('[cycles] onValue error:',err&&err.code,err&&err.message);
+          APP.lastSyncError=(err&&err.code)||'error';
+          syncDot('',APP.curRole==='supervisor'?'sup':'op');
+        });
       }
       if(db&&!unsubLists){
         unsubLists=onValue(ref(db,'lists'),function(snap){
@@ -732,7 +737,7 @@ if(auth){
             APP.lists[k]=m;
           });
           persistListsCache();
-        });
+        },function(err){ console.error('[lists] onValue error:',err&&err.code,err&&err.message); });
       }
       if(!APP.curRole)showScreen('sRole');
     }else{
@@ -786,7 +791,14 @@ if(db){
      pestaña/app, y en un reintento periódico de respaldo. navigator.onLine NO se usa
      como condición: en Android se queda pegado en false tras un toggle de datos/wifi,
      justo el caso que queremos arreglar. */
-  function forceReconnect(){try{goOffline(db);goOnline(db);}catch(e){}}
+  function forceReconnect(){
+    try{goOffline(db);goOnline(db);}catch(e){}
+    /* Las reglas de RTDB exigen auth.token.email vigente: si el refresco del
+       token de Auth se quedó atorado (típico tras estar offline un rato),
+       las lecturas/escrituras fallan con permission-denied aunque la
+       conexión ya haya vuelto — se ve igual a "sin conexión" en pantalla. */
+    if(auth&&auth.currentUser){auth.currentUser.getIdToken(true).catch(function(e){console.error('[auth] token refresh error:',e&&e.code);});}
+  }
   window.addEventListener('online',forceReconnect);
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&!APP.connected)forceReconnect();});
   setInterval(function(){
