@@ -131,8 +131,8 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 #toast.ok{border-color:var(--green);color:var(--green);}
 #toast.err{border-color:var(--red);color:var(--red);}
 /* SUPERVISOR */
-#sSup{background:var(--bg);height:100vh;overflow:hidden;}
-.sup-wrap{padding:18px 20px 48px;max-width:1400px;margin:0 auto;flex:1;overflow-y:auto;min-height:0;}
+#sSup{background:var(--bg);overflow-y:auto;}
+.sup-wrap{padding:18px 20px 48px;max-width:1400px;margin:0 auto;}
 .sup-topbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
 .live-pill{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:.67rem;color:var(--green);background:rgba(82,184,74,.08);border:1px solid rgba(82,184,74,.2);border-radius:20px;padding:4px 12px;}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
@@ -174,9 +174,9 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 .srch:focus{outline:none;border-color:var(--cyan);}
 .fbtn{font-family:'Barlow',sans-serif;font-size:.71rem;font-weight:700;background:var(--s1);border:1px solid var(--b1);border-radius:8px;color:var(--t2);padding:6px 12px;cursor:pointer;}
 .fbtn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(59,187,240,.06);}
-.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--b1);}
+.tbl-wrap{overflow:auto;max-height:520px;border-radius:var(--r);border:1px solid var(--b1);}
 table{width:100%;border-collapse:collapse;font-size:.75rem;}
-thead th{background:var(--s2);padding:9px 11px;text-align:left;font-family:'DM Mono',monospace;font-size:.59rem;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;white-space:nowrap;border-bottom:1px solid var(--b1);cursor:pointer;}
+thead th{position:sticky;top:0;z-index:1;background:var(--s2);padding:9px 11px;text-align:left;font-family:'DM Mono',monospace;font-size:.59rem;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;white-space:nowrap;border-bottom:1px solid var(--b1);cursor:pointer;}
 thead th:hover{color:var(--t2);}.sa::after{content:' ↑';}.sd::after{content:' ↓';}
 tbody tr{border-bottom:1px solid rgba(30,58,95,.5);cursor:pointer;}
 tbody tr:hover{background:var(--s2);}.krow{border-left:3px solid var(--red);}
