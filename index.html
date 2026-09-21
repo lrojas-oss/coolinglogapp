@@ -131,8 +131,8 @@ input:focus,select:focus{outline:none;border-color:var(--cyan);}
 #toast.ok{border-color:var(--green);color:var(--green);}
 #toast.err{border-color:var(--red);color:var(--red);}
 /* SUPERVISOR */
-#sSup{background:var(--bg);overflow-y:auto;}
-.sup-wrap{padding:18px 20px 48px;max-width:1400px;margin:0 auto;}
+#sSup{background:var(--bg);height:100vh;overflow:hidden;}
+.sup-wrap{padding:18px 20px 48px;max-width:1400px;margin:0 auto;flex:1;overflow-y:auto;min-height:0;}
 .sup-topbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
 .live-pill{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:.67rem;color:var(--green);background:rgba(82,184,74,.08);border:1px solid rgba(82,184,74,.2);border-radius:20px;padding:4px 12px;}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
